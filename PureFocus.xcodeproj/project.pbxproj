@@ -8,11 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616C41F47686A004DDA48 /* AppDelegate.swift */; };
-		C53616C71F47686A004DDA48 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616C61F47686A004DDA48 /* ViewController.swift */; };
-		C53616CA1F47686A004DDA48 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C53616C81F47686A004DDA48 /* Main.storyboard */; };
-		C53616CC1F47686A004DDA48 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C53616CB1F47686A004DDA48 /* Assets.xcassets */; };
 		C53616CF1F47686A004DDA48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C53616CD1F47686A004DDA48 /* LaunchScreen.storyboard */; };
 		C53616DA1F47686A004DDA48 /* PureFocusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616D91F47686A004DDA48 /* PureFocusTests.swift */; };
+		C53616E51F47691E004DDA48 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C53616E41F47691E004DDA48 /* Main.storyboard */; };
+		C53616E71F476935004DDA48 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616E61F476935004DDA48 /* MainViewController.swift */; };
+		C53616E91F476960004DDA48 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C53616E81F476960004DDA48 /* Assets.xcassets */; };
+		C53616F11F4769BF004DDA48 /* CallDirectoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616F01F4769BF004DDA48 /* CallDirectoryHandler.swift */; };
+		C53616F51F4769BF004DDA48 /* CallManager.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C53616EE1F4769BF004DDA48 /* CallManager.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C53616FB1F476AC1004DDA48 /* LOGO Blue.png in Resources */ = {isa = PBXBuildFile; fileRef = C53616FA1F476AC1004DDA48 /* LOGO Blue.png */; };
+		C53616FD1F476AD9004DDA48 /* 911.png in Resources */ = {isa = PBXBuildFile; fileRef = C53616FC1F476AD9004DDA48 /* 911.png */; };
+		C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55498931F47745400103CE8 /* BeaconViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,19 +28,46 @@
 			remoteGlobalIDString = C53616C01F47686A004DDA48;
 			remoteInfo = PureFocus;
 		};
+		C53616F31F4769BF004DDA48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C53616B91F47686A004DDA48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C53616ED1F4769BF004DDA48;
+			remoteInfo = CallManager;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C53616F91F4769BF004DDA48 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C53616F51F4769BF004DDA48 /* CallManager.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		C53616C11F47686A004DDA48 /* PureFocus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PureFocus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C53616C41F47686A004DDA48 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C53616C61F47686A004DDA48 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		C53616C91F47686A004DDA48 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		C53616CB1F47686A004DDA48 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C53616CE1F47686A004DDA48 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C53616D01F47686A004DDA48 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C53616D51F47686A004DDA48 /* PureFocusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PureFocusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C53616D91F47686A004DDA48 /* PureFocusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PureFocusTests.swift; sourceTree = "<group>"; };
 		C53616DB1F47686A004DDA48 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C53616E41F47691E004DDA48 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		C53616E61F476935004DDA48 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		C53616E81F476960004DDA48 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C53616EE1F4769BF004DDA48 /* CallManager.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CallManager.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C53616F01F4769BF004DDA48 /* CallDirectoryHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDirectoryHandler.swift; sourceTree = "<group>"; };
+		C53616F21F4769BF004DDA48 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C53616FA1F476AC1004DDA48 /* LOGO Blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LOGO Blue.png"; sourceTree = "<group>"; };
+		C53616FC1F476AD9004DDA48 /* 911.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 911.png; sourceTree = "<group>"; };
+		C55498931F47745400103CE8 /* BeaconViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +85,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C53616EB1F4769BF004DDA48 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -61,6 +100,7 @@
 			children = (
 				C53616C31F47686A004DDA48 /* PureFocus */,
 				C53616D81F47686A004DDA48 /* PureFocusTests */,
+				C53616EF1F4769BF004DDA48 /* CallManager */,
 				C53616C21F47686A004DDA48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,6 +110,7 @@
 			children = (
 				C53616C11F47686A004DDA48 /* PureFocus.app */,
 				C53616D51F47686A004DDA48 /* PureFocusTests.xctest */,
+				C53616EE1F4769BF004DDA48 /* CallManager.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -78,11 +119,14 @@
 			isa = PBXGroup;
 			children = (
 				C53616C41F47686A004DDA48 /* AppDelegate.swift */,
-				C53616C61F47686A004DDA48 /* ViewController.swift */,
-				C53616C81F47686A004DDA48 /* Main.storyboard */,
-				C53616CB1F47686A004DDA48 /* Assets.xcassets */,
+				C53616E61F476935004DDA48 /* MainViewController.swift */,
+				C55498931F47745400103CE8 /* BeaconViewController.swift */,
+				C53616E81F476960004DDA48 /* Assets.xcassets */,
+				C53616E41F47691E004DDA48 /* Main.storyboard */,
 				C53616CD1F47686A004DDA48 /* LaunchScreen.storyboard */,
 				C53616D01F47686A004DDA48 /* Info.plist */,
+				C53616FC1F476AD9004DDA48 /* 911.png */,
+				C53616FA1F476AC1004DDA48 /* LOGO Blue.png */,
 			);
 			path = PureFocus;
 			sourceTree = "<group>";
@@ -96,6 +140,15 @@
 			path = PureFocusTests;
 			sourceTree = "<group>";
 		};
+		C53616EF1F4769BF004DDA48 /* CallManager */ = {
+			isa = PBXGroup;
+			children = (
+				C53616F01F4769BF004DDA48 /* CallDirectoryHandler.swift */,
+				C53616F21F4769BF004DDA48 /* Info.plist */,
+			);
+			path = CallManager;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -106,10 +159,12 @@
 				C53616BD1F47686A004DDA48 /* Sources */,
 				C53616BE1F47686A004DDA48 /* Frameworks */,
 				C53616BF1F47686A004DDA48 /* Resources */,
+				C53616F91F4769BF004DDA48 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C53616F41F4769BF004DDA48 /* PBXTargetDependency */,
 			);
 			name = PureFocus;
 			productName = PureFocus;
@@ -134,6 +189,23 @@
 			productReference = C53616D51F47686A004DDA48 /* PureFocusTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		C53616ED1F4769BF004DDA48 /* CallManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C53616F61F4769BF004DDA48 /* Build configuration list for PBXNativeTarget "CallManager" */;
+			buildPhases = (
+				C53616EA1F4769BF004DDA48 /* Sources */,
+				C53616EB1F4769BF004DDA48 /* Frameworks */,
+				C53616EC1F4769BF004DDA48 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CallManager;
+			productName = CallManager;
+			productReference = C53616EE1F4769BF004DDA48 /* CallManager.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -155,6 +227,11 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = C53616C01F47686A004DDA48;
 					};
+					C53616ED1F4769BF004DDA48 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = 35WYFGA6T2;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = C53616BC1F47686A004DDA48 /* Build configuration list for PBXProject "PureFocus" */;
@@ -172,6 +249,7 @@
 			targets = (
 				C53616C01F47686A004DDA48 /* PureFocus */,
 				C53616D41F47686A004DDA48 /* PureFocusTests */,
+				C53616ED1F4769BF004DDA48 /* CallManager */,
 			);
 		};
 /* End PBXProject section */
@@ -181,13 +259,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C53616E51F47691E004DDA48 /* Main.storyboard in Resources */,
+				C53616FD1F476AD9004DDA48 /* 911.png in Resources */,
+				C53616FB1F476AC1004DDA48 /* LOGO Blue.png in Resources */,
+				C53616E91F476960004DDA48 /* Assets.xcassets in Resources */,
 				C53616CF1F47686A004DDA48 /* LaunchScreen.storyboard in Resources */,
-				C53616CC1F47686A004DDA48 /* Assets.xcassets in Resources */,
-				C53616CA1F47686A004DDA48 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C53616D31F47686A004DDA48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C53616EC1F4769BF004DDA48 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -201,8 +288,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C53616C71F47686A004DDA48 /* ViewController.swift in Sources */,
 				C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */,
+				C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */,
+				C53616E71F476935004DDA48 /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +302,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C53616EA1F4769BF004DDA48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C53616F11F4769BF004DDA48 /* CallDirectoryHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -222,17 +318,14 @@
 			target = C53616C01F47686A004DDA48 /* PureFocus */;
 			targetProxy = C53616D61F47686A004DDA48 /* PBXContainerItemProxy */;
 		};
+		C53616F41F4769BF004DDA48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C53616ED1F4769BF004DDA48 /* CallManager */;
+			targetProxy = C53616F31F4769BF004DDA48 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		C53616C81F47686A004DDA48 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C53616C91F47686A004DDA48 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		C53616CD1F47686A004DDA48 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -342,6 +435,7 @@
 		C53616DF1F47686A004DDA48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
 				INFOPLIST_FILE = PureFocus/Info.plist;
@@ -355,6 +449,7 @@
 		C53616E01F47686A004DDA48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
 				INFOPLIST_FILE = PureFocus/Info.plist;
@@ -395,6 +490,34 @@
 			};
 			name = Release;
 		};
+		C53616F71F4769BF004DDA48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				DEVELOPMENT_TEAM = 35WYFGA6T2;
+				INFOPLIST_FILE = CallManager/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dimez.PureFocus.CallManager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		C53616F81F4769BF004DDA48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				DEVELOPMENT_TEAM = 35WYFGA6T2;
+				INFOPLIST_FILE = CallManager/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dimez.PureFocus.CallManager;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -414,6 +537,7 @@
 				C53616E01F47686A004DDA48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C53616E11F47686A004DDA48 /* Build configuration list for PBXNativeTarget "PureFocusTests" */ = {
 			isa = XCConfigurationList;
@@ -422,6 +546,16 @@
 				C53616E31F47686A004DDA48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C53616F61F4769BF004DDA48 /* Build configuration list for PBXNativeTarget "CallManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C53616F71F4769BF004DDA48 /* Debug */,
+				C53616F81F4769BF004DDA48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

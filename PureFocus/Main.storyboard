@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Main View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="PureFocus" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="JAb-KQ-JoT">
+                                <rect key="frame" x="99.5" y="120" width="178" height="31"/>
+                                <subviews>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rup-8G-jch">
+                                        <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="callBackSwitchHit:" destination="BYZ-38-t0r" eventType="valueChanged" id="QOl-Pu-iQo"/>
+                                        </connections>
+                                    </switch>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Track Beacon" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZPc-fX-eS2">
+                                        <rect key="frame" x="57" y="0.0" width="121" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="JAb-KQ-JoT" secondAttribute="height" multiplier="178:31" id="IIN-r6-QH1"/>
+                                </constraints>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mK5-Pw-O2U">
+                                <rect key="frame" x="157.5" y="47" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="IeB-X1-3jd"/>
+                                    <constraint firstAttribute="width" constant="60" id="cV5-ZO-qCJ" userLabel="width = 60"/>
+                                </constraints>
+                                <state key="normal" title="911 Button" image="911.png">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="emergencyCallHit:" destination="BYZ-38-t0r" eventType="touchUpInside" id="nph-iQ-SbO"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Hit plus to update beacon" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4z7-Z7-kOO">
+                                <rect key="frame" x="47.5" y="159" width="280" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="280" id="SGD-K8-fdv"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="9Br-I8-Qs3">
+                                <rect key="frame" x="111.5" y="209" width="152" height="37"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6C4-Gt-kb6" userLabel="Beacon Button">
+                                        <rect key="frame" x="0.0" y="0.0" width="45" height="37"/>
+                                        <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="0.25098040700000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="37" id="DUz-Lr-6za"/>
+                                            <constraint firstAttribute="width" constant="45" id="hrj-Qm-Df5"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="35"/>
+                                        <state key="normal" title="+">
+                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="beaconButtonHit:" destination="BYZ-38-t0r" eventType="primaryActionTriggered" id="Fpf-wi-WMc"/>
+                                            <segue destination="mks-rh-Urh" kind="popoverPresentation" identifier="toBeacon" popoverAnchorView="6C4-Gt-kb6" id="uCZ-TW-CVQ">
+                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                            </segue>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Beacon" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yzm-2g-Ldg" userLabel="Beacon Label">
+                                        <rect key="frame" x="55" y="0.0" width="97" height="37"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LOGO Blue.png" translatesAutoresizingMaskIntoConstraints="NO" id="h94-Dl-mat">
+                                <rect key="frame" x="123.5" y="269.5" width="128" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="128" id="BAN-yC-kwz"/>
+                                    <constraint firstAttribute="height" constant="128" id="f79-hT-6pV"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="4z7-Z7-kOO" firstAttribute="top" secondItem="JAb-KQ-JoT" secondAttribute="bottom" constant="8" id="1hT-o8-Ime"/>
+                            <constraint firstItem="mK5-Pw-O2U" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="COT-Rj-Kaz"/>
+                            <constraint firstItem="JAb-KQ-JoT" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="100" id="GHB-M4-9Qa"/>
+                            <constraint firstItem="9Br-I8-Qs3" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="OIT-qR-S7H"/>
+                            <constraint firstItem="h94-Dl-mat" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Rrb-Kk-mLF"/>
+                            <constraint firstItem="4z7-Z7-kOO" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="czX-M1-sLJ"/>
+                            <constraint firstItem="JAb-KQ-JoT" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" constant="1" id="jkK-80-Qhs"/>
+                            <constraint firstItem="mK5-Pw-O2U" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="27" id="t17-Qe-Ds9"/>
+                            <constraint firstItem="9Br-I8-Qs3" firstAttribute="top" secondItem="4z7-Z7-kOO" secondAttribute="bottom" constant="20" id="tpk-7J-KyD"/>
+                            <constraint firstItem="h94-Dl-mat" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="y22-RE-NUs"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="beaconButton" destination="6C4-Gt-kb6" id="0kJ-57-DbI"/>
+                        <outlet property="callBlockStatusSwitch" destination="rup-8G-jch" id="7AA-cH-Xb5"/>
+                        <outlet property="inRangeTextField" destination="4z7-Z7-kOO" id="8f0-u4-caN"/>
+                        <outlet property="logoImage" destination="h94-Dl-mat" id="Zhb-VY-xVG"/>
+                        <outlet property="setupLabel" destination="Yzm-2g-Ldg" id="7hP-DB-aKa"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="138.98050974512745"/>
+        </scene>
+        <!--BeaconViewController-->
+        <scene sceneID="ZPE-xM-ZkG">
+            <objects>
+                <viewController storyboardIdentifier="main" title="BeaconViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="mks-rh-Urh" customClass="BeaconViewController" customModule="PureFocus" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="wpA-1h-y4l"/>
+                        <viewControllerLayoutGuide type="bottom" id="YiS-eb-Yda"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Rzu-mh-4zB">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="cAo-uK-UlO">
+                                <rect key="frame" x="47.5" y="258" width="280.5" height="151.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UUID:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dFf-w6-59H">
+                                        <rect key="frame" x="117.5" y="0.0" width="45.5" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="UUID" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5Qc-iB-8X6">
+                                        <rect key="frame" x="0.0" y="20.5" width="280.5" height="30"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="UUID"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="280" id="18k-CF-GGJ"/>
+                                        </constraints>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Major:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="alK-ec-dYi">
+                                        <rect key="frame" x="116.5" y="50.5" width="48" height="20.5"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Major"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Major" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FmW-ut-BmA">
+                                        <rect key="frame" x="90" y="71" width="100.5" height="30"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Major"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="100" id="ivX-Of-gTs"/>
+                                        </constraints>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Minor:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sc8-dv-grQ">
+                                        <rect key="frame" x="116" y="101" width="48.5" height="20.5"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Minor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Minor" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wpg-BD-b5e">
+                                        <rect key="frame" x="90" y="121.5" width="100.5" height="30"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="Minor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="100" id="PlM-m8-QDM"/>
+                                        </constraints>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="cAo-uK-UlO" firstAttribute="centerX" secondItem="Rzu-mh-4zB" secondAttribute="centerX" id="gyE-AS-OUG"/>
+                            <constraint firstItem="cAo-uK-UlO" firstAttribute="centerY" secondItem="Rzu-mh-4zB" secondAttribute="centerY" id="ptz-4R-3ui"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="majorTextfield" destination="FmW-ut-BmA" id="ucD-WR-W4U"/>
+                        <outlet property="minorTextField" destination="Wpg-BD-b5e" id="fmv-7K-PQS"/>
+                        <outlet property="uuID" destination="5Qc-iB-8X6" id="sXK-Ue-00T"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Xuv-qh-JvH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1030" y="159"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="911.png" width="339" height="339"/>
+        <image name="LOGO Blue.png" width="3000" height="3000"/>
+    </resources>
+</document>
