@@ -8,18 +8,33 @@
 
 import Foundation
 import CallKit
+// import Contacts
 
 class CallDirectoryHandler: CXCallDirectoryProvider {
     
-    var blockList: [CXCallDirectoryPhoneNumber] = []
-        // [CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
+    let defaults = UserDefaults(suiteName: "group.purefocus")!
+    var isBlocked: Bool {
+        return defaults.bool(forKey: "beaconInRange")
+    }
+    
+    var blockList: [CXCallDirectoryPhoneNumber]{
+        if isBlocked{
+            return [CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
+        }
+        return []
+    }
+    /*{
+        if isBlocked{
+            return UserDefaults(suiteName: "group.purefocus")?.object(forKey: "blockList") as! [CXCallDirectoryPhoneNumber]
+        }
+        return []
+    }*/
+        //[CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
     
     override func beginRequest(with context: CXCallDirectoryExtensionContext) {
         print("Inside of CallDirectoryHandler.beginRequest, checking isBlocked:  ")
-        let defaults = UserDefaults.standard
-        var isBlocked: Bool {
-            return defaults.bool(forKey: "beaconInRange")
-        }
+        print("blockList: \(blockList)")
+
         print(isBlocked)
         context.delegate = self
         
@@ -49,17 +64,36 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
         // consider only loading a subset of numbers at a given time and using autorelease pool(s) to release objects allocated during each batch of numbers which are loaded.
         //
         // Numbers must be provided in numerically ascending order.
-        
-        
-        for i in 17270000000...17279999999{
-            blockList.append(CXCallDirectoryPhoneNumber.init(exactly: i)!)
-        }
-        for i in 14800000000...14809999999{
-            blockList.append(CXCallDirectoryPhoneNumber.init(exactly: i)!)
-        }
-        let blockedPhoneNumbers: [CXCallDirectoryPhoneNumber] = blockList
-        // must be sequential list of blocked numbers
-        for phoneNumber in blockedPhoneNumbers.sorted(by: <) {
+        /*
+        let intList = [
+            18134282120,
+            16023163590,
+            17275254640,
+            15047175649,
+            17279026840,
+            17272908704,
+            17273094634,
+            17316101638,
+            17276867941,
+            18137516718,
+            18137313124,
+            17277355794,
+            17274039000,
+            17275574199,
+            18133051538,
+            17273038030,
+            19418006391,
+            15617161992,
+            18005318111,
+            17273665525,
+            18138058377,
+            15049086003
+        ]
+        for int in intList{
+            blockList.append(CXCallDirectoryPhoneNumber.init(int))
+        }*/
+
+        for phoneNumber in blockList.sorted(by: <) {
             print("blocked number: \(phoneNumber)")
             context.addBlockingEntry(withNextSequentialPhoneNumber: phoneNumber)
         }

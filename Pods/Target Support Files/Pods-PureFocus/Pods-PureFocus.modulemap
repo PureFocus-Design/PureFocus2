@@ -1,0 +1,6 @@
+framework module Pods_PureFocus {
+  umbrella header "Pods-PureFocus-umbrella.h"
+
+  export *
+  module * { export * }
+}

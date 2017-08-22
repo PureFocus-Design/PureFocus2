@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C59638A6F3F97DEE40BB12D /* Pods_CallManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BC91A59525A56A3FE323E7A /* Pods_CallManager.framework */; };
+		58EA347B7F4895E74F7D61DA /* Pods_PureFocusTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BA7E02C90484967D5A9688A /* Pods_PureFocusTests.framework */; };
+		97191C2C73B767A8DEE5BC02 /* Pods_PureFocus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 136F12FFDCCC356DFA08DEED /* Pods_PureFocus.framework */; };
+		C50EDF201F4CB11A008749E2 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C50EDF1F1F4CB11A008749E2 /* Alamofire.framework */; };
 		C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616C41F47686A004DDA48 /* AppDelegate.swift */; };
 		C53616CF1F47686A004DDA48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C53616CD1F47686A004DDA48 /* LaunchScreen.storyboard */; };
 		C53616DA1F47686A004DDA48 /* PureFocusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616D91F47686A004DDA48 /* PureFocusTests.swift */; };
@@ -18,6 +22,7 @@
 		C53616FB1F476AC1004DDA48 /* LOGO Blue.png in Resources */ = {isa = PBXBuildFile; fileRef = C53616FA1F476AC1004DDA48 /* LOGO Blue.png */; };
 		C53616FD1F476AD9004DDA48 /* 911.png in Resources */ = {isa = PBXBuildFile; fileRef = C53616FC1F476AD9004DDA48 /* 911.png */; };
 		C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55498931F47745400103CE8 /* BeaconViewController.swift */; };
+		C56532FB1F4CB00800C3A75A /* Alamo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56532FA1F4CB00800C3A75A /* Alamo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +57,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		136F12FFDCCC356DFA08DEED /* Pods_PureFocus.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PureFocus.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BA7E02C90484967D5A9688A /* Pods_PureFocusTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PureFocusTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BC91A59525A56A3FE323E7A /* Pods_CallManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CallManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		358923BC0D64A99E9E49DFD6 /* Pods-CallManager.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CallManager.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CallManager/Pods-CallManager.debug.xcconfig"; sourceTree = "<group>"; };
+		368AAA83231272FBC7F0942E /* Pods-PureFocusTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocusTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests.debug.xcconfig"; sourceTree = "<group>"; };
+		702F4A8D65602307F0D5C081 /* Pods-PureFocus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocus.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus.debug.xcconfig"; sourceTree = "<group>"; };
+		C50EDF1F1F4CB11A008749E2 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "Pods/../build/Debug-iphoneos/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
 		C53616C11F47686A004DDA48 /* PureFocus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PureFocus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C53616C41F47686A004DDA48 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C53616CE1F47686A004DDA48 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -68,6 +80,12 @@
 		C53616FA1F476AC1004DDA48 /* LOGO Blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LOGO Blue.png"; sourceTree = "<group>"; };
 		C53616FC1F476AD9004DDA48 /* 911.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 911.png; sourceTree = "<group>"; };
 		C55498931F47745400103CE8 /* BeaconViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconViewController.swift; sourceTree = "<group>"; };
+		C56532F81F488B5900C3A75A /* PureFocus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PureFocus.entitlements; sourceTree = "<group>"; };
+		C56532F91F488BC700C3A75A /* CallManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CallManager.entitlements; sourceTree = "<group>"; };
+		C56532FA1F4CB00800C3A75A /* Alamo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alamo.swift; sourceTree = "<group>"; };
+		DAFD0AEF7F52D1C839EB8786 /* Pods-PureFocusTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocusTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests.release.xcconfig"; sourceTree = "<group>"; };
+		EF8A4BAE1A02FB3CC52DD993 /* Pods-CallManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CallManager.release.xcconfig"; path = "Pods/Target Support Files/Pods-CallManager/Pods-CallManager.release.xcconfig"; sourceTree = "<group>"; };
+		FD8AC521C31CA91E329FB871 /* Pods-PureFocus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocus.release.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +93,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C50EDF201F4CB11A008749E2 /* Alamofire.framework in Frameworks */,
+				97191C2C73B767A8DEE5BC02 /* Pods_PureFocus.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58EA347B7F4895E74F7D61DA /* Pods_PureFocusTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,12 +110,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C59638A6F3F97DEE40BB12D /* Pods_CallManager.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		19EFDC26E984284BB9B8EA4F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C50EDF1F1F4CB11A008749E2 /* Alamofire.framework */,
+				1BC91A59525A56A3FE323E7A /* Pods_CallManager.framework */,
+				136F12FFDCCC356DFA08DEED /* Pods_PureFocus.framework */,
+				1BA7E02C90484967D5A9688A /* Pods_PureFocusTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3403FEC326495D818E45F5B7 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				358923BC0D64A99E9E49DFD6 /* Pods-CallManager.debug.xcconfig */,
+				EF8A4BAE1A02FB3CC52DD993 /* Pods-CallManager.release.xcconfig */,
+				702F4A8D65602307F0D5C081 /* Pods-PureFocus.debug.xcconfig */,
+				FD8AC521C31CA91E329FB871 /* Pods-PureFocus.release.xcconfig */,
+				368AAA83231272FBC7F0942E /* Pods-PureFocusTests.debug.xcconfig */,
+				DAFD0AEF7F52D1C839EB8786 /* Pods-PureFocusTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		C53616B81F47686A004DDA48 = {
 			isa = PBXGroup;
 			children = (
@@ -102,6 +148,8 @@
 				C53616D81F47686A004DDA48 /* PureFocusTests */,
 				C53616EF1F4769BF004DDA48 /* CallManager */,
 				C53616C21F47686A004DDA48 /* Products */,
+				3403FEC326495D818E45F5B7 /* Pods */,
+				19EFDC26E984284BB9B8EA4F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -118,7 +166,9 @@
 		C53616C31F47686A004DDA48 /* PureFocus */ = {
 			isa = PBXGroup;
 			children = (
+				C56532F81F488B5900C3A75A /* PureFocus.entitlements */,
 				C53616C41F47686A004DDA48 /* AppDelegate.swift */,
+				C56532FA1F4CB00800C3A75A /* Alamo.swift */,
 				C53616E61F476935004DDA48 /* MainViewController.swift */,
 				C55498931F47745400103CE8 /* BeaconViewController.swift */,
 				C53616E81F476960004DDA48 /* Assets.xcassets */,
@@ -143,6 +193,7 @@
 		C53616EF1F4769BF004DDA48 /* CallManager */ = {
 			isa = PBXGroup;
 			children = (
+				C56532F91F488BC700C3A75A /* CallManager.entitlements */,
 				C53616F01F4769BF004DDA48 /* CallDirectoryHandler.swift */,
 				C53616F21F4769BF004DDA48 /* Info.plist */,
 			);
@@ -156,10 +207,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C53616DE1F47686A004DDA48 /* Build configuration list for PBXNativeTarget "PureFocus" */;
 			buildPhases = (
+				2606451B9A39C32E72F9A142 /* [CP] Check Pods Manifest.lock */,
 				C53616BD1F47686A004DDA48 /* Sources */,
 				C53616BE1F47686A004DDA48 /* Frameworks */,
 				C53616BF1F47686A004DDA48 /* Resources */,
 				C53616F91F4769BF004DDA48 /* Embed App Extensions */,
+				0E7C1CB737E7CA2FE2104659 /* [CP] Embed Pods Frameworks */,
+				3022530545560CE62428F046 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -175,9 +229,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C53616E11F47686A004DDA48 /* Build configuration list for PBXNativeTarget "PureFocusTests" */;
 			buildPhases = (
+				F500F358395CD5D07FB08AF9 /* [CP] Check Pods Manifest.lock */,
 				C53616D11F47686A004DDA48 /* Sources */,
 				C53616D21F47686A004DDA48 /* Frameworks */,
 				C53616D31F47686A004DDA48 /* Resources */,
+				7F286608AE9A5A53A830C4A6 /* [CP] Embed Pods Frameworks */,
+				1D0C1F83EC5CE193FC27413A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -193,9 +250,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C53616F61F4769BF004DDA48 /* Build configuration list for PBXNativeTarget "CallManager" */;
 			buildPhases = (
+				8C03533CBAA9AD13AA7139EC /* [CP] Check Pods Manifest.lock */,
 				C53616EA1F4769BF004DDA48 /* Sources */,
 				C53616EB1F4769BF004DDA48 /* Frameworks */,
 				C53616EC1F4769BF004DDA48 /* Resources */,
+				67C573E1C3E77EFB710A0D90 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -220,6 +279,11 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 35WYFGA6T2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					C53616D41F47686A004DDA48 = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -231,6 +295,11 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 35WYFGA6T2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -283,11 +352,135 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0E7C1CB737E7CA2FE2104659 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1D0C1F83EC5CE193FC27413A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2606451B9A39C32E72F9A142 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		3022530545560CE62428F046 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		67C573E1C3E77EFB710A0D90 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CallManager/Pods-CallManager-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7F286608AE9A5A53A830C4A6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8C03533CBAA9AD13AA7139EC /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		F500F358395CD5D07FB08AF9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		C53616BD1F47686A004DDA48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C56532FB1F4CB00800C3A75A /* Alamo.swift in Sources */,
 				C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */,
 				C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */,
 				C53616E71F476935004DDA48 /* MainViewController.swift in Sources */,
@@ -434,10 +627,16 @@
 		};
 		C53616DF1F47686A004DDA48 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 702F4A8D65602307F0D5C081 /* Pods-PureFocus.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PureFocus/PureFocus.entitlements;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/Alamofire",
+				);
 				INFOPLIST_FILE = PureFocus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dimez.PureFocus;
@@ -448,10 +647,16 @@
 		};
 		C53616E01F47686A004DDA48 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD8AC521C31CA91E329FB871 /* Pods-PureFocus.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PureFocus/PureFocus.entitlements;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos/Alamofire",
+				);
 				INFOPLIST_FILE = PureFocus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dimez.PureFocus;
@@ -462,6 +667,7 @@
 		};
 		C53616E21F47686A004DDA48 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 368AAA83231272FBC7F0942E /* Pods-PureFocusTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -477,6 +683,7 @@
 		};
 		C53616E31F47686A004DDA48 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DAFD0AEF7F52D1C839EB8786 /* Pods-PureFocusTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -492,8 +699,10 @@
 		};
 		C53616F71F4769BF004DDA48 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 358923BC0D64A99E9E49DFD6 /* Pods-CallManager.debug.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CODE_SIGN_ENTITLEMENTS = CallManager/CallManager.entitlements;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
 				INFOPLIST_FILE = CallManager/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -506,8 +715,10 @@
 		};
 		C53616F81F4769BF004DDA48 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EF8A4BAE1A02FB3CC52DD993 /* Pods-CallManager.release.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CODE_SIGN_ENTITLEMENTS = CallManager/CallManager.entitlements;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
 				INFOPLIST_FILE = CallManager/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";

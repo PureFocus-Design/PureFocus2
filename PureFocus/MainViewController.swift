@@ -11,14 +11,14 @@ import CallKit
 import CoreLocation
 import Foundation
 import AddressBook
+import CoreTelephony
+import Contacts
 
 
 class MainViewController: UIViewController{
     
     // Future implementation:  You could write an API that checked how long the app has been running
     // Contacts someone if it's off.
-    
-    // You can use call911() and quit together to break sandbox
     
     // MARK ADD CODE:  Use starting point for greater accuracy
     
@@ -69,7 +69,10 @@ class MainViewController: UIViewController{
 
     @IBAction func emergencyCallHit(_ sender: Any) {
         print("Calling 911")
-        call911()
+        
+        reloadExtension()
+        
+        // call911()
         
         // MARK ADD CODE:  Add Code that gets executed in Guided Access mode
     }
@@ -79,7 +82,6 @@ class MainViewController: UIViewController{
         
         
     }
-    
     
     // variables
     
@@ -92,20 +94,20 @@ class MainViewController: UIViewController{
             print("beaconUUID: \(beaconUUID!)")
         }
     }
-    var major: Int!{
+    var major: Int!/*{
         didSet{
             if major != nil{
                 print("major: \(major!)")
             }
         }
-    }
-    var minor: Int!{
+    }*/
+    var minor: Int!/*{
         didSet{
             if minor != nil {
                 print("minor: \(minor!)")
             }
         }
-    }
+    }*/
     var beaconRegion: CLBeaconRegion!
     var locationManager: CLLocationManager!
     var clBeacon: CLBeacon!
@@ -113,8 +115,9 @@ class MainViewController: UIViewController{
     var startingAccuracy: Double!
     var lastFiveReadings: [Double] = []
     var staringRssi: Int!
+    var blockList: [CXCallDirectoryPhoneNumber] = []
 
-    let defaults = UserDefaults.standard
+    var defaults = UserDefaults(suiteName: "group.purefocus")!
     
     var isLandscape: Bool{
         switch UIDevice.current.orientation {
@@ -126,6 +129,12 @@ class MainViewController: UIViewController{
             return false
         }
     }
+    var callCenter = CTCallCenter()
+    var callObserver = CXCallObserver()
+    var isBlocking = false
+    var callDelegate: CXCallObserverDelegate!
+    var callManager: CXCallObserver!
+    // var contactList: [Int] = []
     
     // MARK ADD CODE: NSCoding, persist data instead of hard code UUID
     
@@ -145,6 +154,9 @@ class MainViewController: UIViewController{
         if minor == nil{
             minor = 34452
         }
+        loadContacts()
+        defaults.set(blockList, forKey: "blockList")
+        // print("callDirManager: \(callDirManager)")
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -159,6 +171,37 @@ class MainViewController: UIViewController{
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    func getDigits(phone :String)->Int?{
+        
+        var digits = phone.components(separatedBy: "digits=").last!
+        digits = digits.components(separatedBy: ">").first!
+        if digits.contains("+"){
+            digits.characters.removeFirst(1)
+        }
+        if digits.contains(";"){
+            digits.characters.removeLast(5)
+        }
+        if digits.characters.count == 10{
+            digits.characters.insert("1", at: digits.characters.startIndex)
+        }
+        return Int(digits)
+    }
+    
+    func loadContacts(){
+        let contactStore = CNContactStore()
+        let keys = [CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey, CNContactPhoneNumbersKey]
+        let request1 = CNContactFetchRequest(keysToFetch: keys  as [CNKeyDescriptor])
+        try! contactStore.enumerateContacts(with: request1) { (contact, error) in
+            for phone in contact.phoneNumbers {
+                if let validPhone = self.getDigits(phone: phone.value.description){
+                    // print("Phone: \(validPhone)")
+                    self.blockList.append(CXCallDirectoryPhoneNumber(validPhone))
+                }
+            }
+        }
+    }
+    
     func monitorBeacons(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -182,11 +225,8 @@ class MainViewController: UIViewController{
         }
         beaconRegion.notifyOnEntry = true
         beaconRegion.notifyOnExit = true
-        print("Loading \(beaconRegion!) into locationManager for monitoring and ranging")
         locationManager.startMonitoring(for: beaconRegion)
         locationManager.startRangingBeacons(in: beaconRegion)
-        print("Monitored regions: \(locationManager.monitoredRegions)")
-        print("Ranged regions: \(locationManager.rangedRegions)")
     }
     func breakSandbox(){
         call911()
@@ -195,8 +235,9 @@ class MainViewController: UIViewController{
     
     func reloadExtension(){
         validateExtension()
-        callDirManager.reloadExtension(withIdentifier: "com.dimez.SimpleButtonDemo", completionHandler: { (error) in
-            print("Reloading extension.")
+        callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
+            // print("Reloading extension.")
+            // print(self.defaults.object(forKey: "blockList") ?? "Blocklist not set")
             if let validError = error {
                 print("Error loading extension: \(validError)")
             }
@@ -204,7 +245,7 @@ class MainViewController: UIViewController{
     }
     
     func validateExtension(){
-        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.SimpleButtonDemo") { (cXCallDirectoryManagerEnabledStatus) in
+        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.PureFocus.CallManager") { (cXCallDirectoryManagerEnabledStatus) in
             switch cXCallDirectoryManagerEnabledStatus.0{
             case .disabled:
                 // add code: present instructions modally
@@ -253,17 +294,31 @@ extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 
         if beacons.count > 0 {
-
-            // MARK ADD CODE:  currentlysaving reference to beacon, instead sample several
+            // print(beacons.first!)
+            // MARK ADD CODE:  Remove extension implementation and API calls
+            
             if readingsAverage > 4.20{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
-                
+                inRangeTextField.text = "Beacon out of range"
+                // reload extension only if the isBlocking changes
+                if self.isBlocking == true{
+                    defaults.set(false, forKey: "beaconInRange")
+                    self.isBlocking = false
+                    // reloadExtension()
+                }
+                // reloadExtension()
             }else{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
                 inRangeTextField.text = "Beacon in range"
-                
+                // reload extension only if the isBlocking changes
+                if self.isBlocking == false{
+                    defaults.set(true, forKey: "beaconInRange")
+                    self.isBlocking = true
+                    // reloadExtension()
+                }
+                // reloadExtension()
             }
             let beaconAccuracy = beacons.first!.accuracy
             let beaconRssi = beacons.first!.rssi
@@ -315,5 +370,8 @@ extension UIColor {
         )
     }
 }
-
-
+extension CLProximity: CustomStringConvertible{
+    public var description: String{
+        return String(self.rawValue)
+    }
+}

@@ -26,6 +26,8 @@
 	<string>Main</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App tracks your proximity to beacon</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We block your contacts calls</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
