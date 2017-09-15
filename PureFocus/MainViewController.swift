@@ -57,7 +57,6 @@ class MainViewController: UIViewController{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
              }else{
                 inRangeTextField.placeholder = "Hit plus to update beacon"
-                
             }
             print("callBlock Off")  //  = Dongle out of range
             // MARK ADD CODE: Feed it an empty list
@@ -115,7 +114,7 @@ class MainViewController: UIViewController{
     var startingAccuracy: Double!
     var lastFiveReadings: [Double] = []
     var staringRssi: Int!
-    var blockList: [CXCallDirectoryPhoneNumber] = []
+    var blockList: [CXCallDirectoryPhoneNumber] = [CXCallDirectoryPhoneNumber.init(17274531901)]
     var callCenter = CTCallCenter()
     var callObserver = CXCallObserver()
     var isBlocking = false
@@ -147,6 +146,7 @@ class MainViewController: UIViewController{
         inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
         monitorBeacons()
         defaults.set(false, forKey: "beaconInRange")
+        defaults.synchronize()
         if major == nil{
             major = 10002
         }
@@ -155,6 +155,7 @@ class MainViewController: UIViewController{
         }
         loadContacts()
         defaults.set(blockList, forKey: "blockList")
+        print(defaults.bool(forKey: "beaconInRange"))
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -180,6 +181,9 @@ class MainViewController: UIViewController{
         }
         if digits.characters.count == 10{
             digits.characters.insert("1", at: digits.characters.startIndex)
+        }
+        if digits.characters.count < 10{
+            return nil
         }
         return Int(digits)
     }
@@ -243,7 +247,7 @@ class MainViewController: UIViewController{
     }
     
     func validateExtension(){
-        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.SimpleButtonDemo") { (cXCallDirectoryManagerEnabledStatus) in
+        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.PureFocus.CallManager") { (cXCallDirectoryManagerEnabledStatus) in
             switch cXCallDirectoryManagerEnabledStatus.0{
             case .disabled:
                 // add code: present instructions modally

@@ -15,6 +15,8 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
         // [CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
     let defaults = UserDefaults(suiteName: "group.purefocus")!
     var isBlocked: Bool {
+        print("Loading defaults boolean: ")
+        print(defaults.bool(forKey: "beaconInRange"))
         return defaults.bool(forKey: "beaconInRange")
     }
     
@@ -22,12 +24,12 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
         if isBlocked{
             return [CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
         }
+        // return [CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
         return []
     }
     
     override func beginRequest(with context: CXCallDirectoryExtensionContext) {
         print("Inside of CallDirectoryHandler.beginRequest, checking isBlocked:  ")
-        // let defaults = UserDefaults.standard
         var isBlocked: Bool {
             return defaults.bool(forKey: "beaconInRange")
         }
