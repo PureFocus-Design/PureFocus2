@@ -11,8 +11,19 @@ import CallKit
 
 class CallDirectoryHandler: CXCallDirectoryProvider {
     
-    var blockList: [CXCallDirectoryPhoneNumber] = []
+    // var blockList: [CXCallDirectoryPhoneNumber] = []
         // [CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
+    let defaults = UserDefaults(suiteName: "group.purefocus")!
+    var isBlocked: Bool {
+        return defaults.bool(forKey: "beaconInRange")
+    }
+    
+    var blockList: [CXCallDirectoryPhoneNumber]{
+        if isBlocked{
+            return [CXCallDirectoryPhoneNumber.init(exactly: 17274531901)!]
+        }
+        return []
+    }
     
     override func beginRequest(with context: CXCallDirectoryExtensionContext) {
         print("Inside of CallDirectoryHandler.beginRequest, checking isBlocked:  ")
@@ -50,16 +61,16 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
         //
         // Numbers must be provided in numerically ascending order.
         
-        
+        /*
         for i in 17270000000...17279999999{
             blockList.append(CXCallDirectoryPhoneNumber.init(exactly: i)!)
         }
         for i in 14800000000...14809999999{
             blockList.append(CXCallDirectoryPhoneNumber.init(exactly: i)!)
-        }
-        let blockedPhoneNumbers: [CXCallDirectoryPhoneNumber] = blockList
+        }*/
+        // let blockedPhoneNumbers: [CXCallDirectoryPhoneNumber] = blockList
         // must be sequential list of blocked numbers
-        for phoneNumber in blockedPhoneNumbers.sorted(by: <) {
+        for phoneNumber in blockList.sorted(by: <) {
             print("blocked number: \(phoneNumber)")
             context.addBlockingEntry(withNextSequentialPhoneNumber: phoneNumber)
         }
