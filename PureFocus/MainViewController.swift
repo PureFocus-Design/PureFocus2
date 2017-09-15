@@ -11,6 +11,8 @@ import CallKit
 import CoreLocation
 import Foundation
 import AddressBook
+import CoreTelephony
+import Contacts
 
 
 class MainViewController: UIViewController{
@@ -113,8 +115,14 @@ class MainViewController: UIViewController{
     var startingAccuracy: Double!
     var lastFiveReadings: [Double] = []
     var staringRssi: Int!
+    var blockList: [CXCallDirectoryPhoneNumber] = []
+    var callCenter = CTCallCenter()
+    var callObserver = CXCallObserver()
+    var isBlocking = false
+    var callDelegate: CXCallObserverDelegate!
+    var callManager: CXCallObserver!
 
-    let defaults = UserDefaults.standard
+    let defaults = UserDefaults(suiteName: "group.purefocus")!
     
     var isLandscape: Bool{
         switch UIDevice.current.orientation {
@@ -145,6 +153,8 @@ class MainViewController: UIViewController{
         if minor == nil{
             minor = 34452
         }
+        loadContacts()
+        defaults.set(blockList, forKey: "blockList")
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -159,6 +169,35 @@ class MainViewController: UIViewController{
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    func getDigits(phone :String)->Int?{
+        var digits = phone.components(separatedBy: "digits=").last!
+        digits = digits.components(separatedBy: ">").first!
+        if digits.contains("+"){
+            digits.characters.removeFirst(1)
+        }
+        if digits.contains(";"){
+            digits.characters.removeLast(5)
+        }
+        if digits.characters.count == 10{
+            digits.characters.insert("1", at: digits.characters.startIndex)
+        }
+        return Int(digits)
+    }
+
+    func loadContacts(){
+        let contactStore = CNContactStore()
+        let keys = [CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey, CNContactPhoneNumbersKey]
+        let request1 = CNContactFetchRequest(keysToFetch: keys  as [CNKeyDescriptor])
+        try! contactStore.enumerateContacts(with: request1) { (contact, error) in
+            for phone in contact.phoneNumbers {
+                if let validPhone = self.getDigits(phone: phone.value.description){
+                    print("Phone: \(validPhone)")
+                    self.blockList.append(CXCallDirectoryPhoneNumber(validPhone))
+                }
+            }
+        }
+    }
+    
     func monitorBeacons(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -195,7 +234,7 @@ class MainViewController: UIViewController{
     
     func reloadExtension(){
         validateExtension()
-        callDirManager.reloadExtension(withIdentifier: "com.dimez.SimpleButtonDemo", completionHandler: { (error) in
+        callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
             print("Reloading extension.")
             if let validError = error {
                 print("Error loading extension: \(validError)")
@@ -254,16 +293,24 @@ extension MainViewController: CLLocationManagerDelegate {
 
         if beacons.count > 0 {
 
-            // MARK ADD CODE:  currentlysaving reference to beacon, instead sample several
             if readingsAverage > 4.20{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
+                if self.isBlocking == true{
+                    defaults.set(false, forKey: "beaconInRange")
+                    self.isBlocking = false
+                    reloadExtension()
+                }
                 
             }else{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
                 inRangeTextField.text = "Beacon in range"
-                
+                if self.isBlocking == false{
+                    defaults.set(true, forKey: "beaconInRange")
+                    self.isBlocking = true
+                    reloadExtension()
+                }
             }
             let beaconAccuracy = beacons.first!.accuracy
             let beaconRssi = beacons.first!.rssi
@@ -313,6 +360,12 @@ extension UIColor {
             green: (rgb >> 8) & 0xFF,
             blue: rgb & 0xFF
         )
+    }
+}
+
+extension CLProximity: CustomStringConvertible{
+    public var description: String{
+        return String(self.rawValue)
     }
 }
 

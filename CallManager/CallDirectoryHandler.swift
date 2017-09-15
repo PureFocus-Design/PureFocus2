@@ -27,7 +27,7 @@ class CallDirectoryHandler: CXCallDirectoryProvider {
     
     override func beginRequest(with context: CXCallDirectoryExtensionContext) {
         print("Inside of CallDirectoryHandler.beginRequest, checking isBlocked:  ")
-        let defaults = UserDefaults.standard
+        // let defaults = UserDefaults.standard
         var isBlocked: Bool {
             return defaults.bool(forKey: "beaconInRange")
         }
