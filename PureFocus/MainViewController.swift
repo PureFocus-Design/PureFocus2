@@ -11,9 +11,6 @@ import CallKit
 import CoreLocation
 import Foundation
 import AddressBook
-import CoreTelephony
-import Contacts
-
 
 class MainViewController: UIViewController{
     
@@ -22,101 +19,26 @@ class MainViewController: UIViewController{
     
     // MARK ADD CODE:  Use starting point for greater accuracy
     
-    @IBOutlet weak var callBlockStatusSwitch: UISwitch!
-    
-    @IBOutlet weak var setupLabel: UILabel!
-    
-    @IBOutlet weak var beaconButton: UIButton!
-    
-    @IBOutlet weak var logoImage: UIImageView!
-    
-    
-    @IBAction func callBackSwitchHit(_ sender: Any) {
-        
-        // Turns tracking of beacons on/off, could later be used as Privacy mode feature
-        
-        if callBlockStatusSwitch.isOn{ // = Dongle in range
-            print("callBlock On")
-            if let validBeaconRegion = beaconRegion{
-                locationManager.startRangingBeacons(in: validBeaconRegion)
-             }
-            if let validBeacon = clBeacon {
-                startingAccuracy = validBeacon.accuracy
-            }
-            // MARK ADD CODE: Tell it to use default list to block calls
-            // reloadExtension()
-            
-        }else{
-             if let validBeaconRegion = beaconRegion{
-                locationManager.stopRangingBeacons(in: validBeaconRegion)
-                startingAccuracy = nil
-                inRangeTextField.text = ""
-                inRangeTextField.placeholder = validBeaconRegion.proximityUUID.description
-                inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
-             }else{
-                inRangeTextField.placeholder = "Hit plus to update beacon"
-                
-            }
-            print("callBlock Off")  //  = Dongle out of range
-            // MARK ADD CODE: Feed it an empty list
-            // reloadExtension()
-            // exit(1)
-        }
-        
-    }
-    
-    @IBOutlet weak var inRangeTextField: UITextField!
-
-    @IBAction func emergencyCallHit(_ sender: Any) {
-        print("Calling 911")
-        
-        reloadExtension()
-        
-        // call911()
-        
-        // MARK ADD CODE:  Add Code that gets executed in Guided Access mode
-    }
-    
-    @IBAction func beaconButtonHit(_ sender: Any) {
-        print("Beacon button hit")
-        
-        
-    }
-    
-    // variables
-    
     var callDirManager = CXCallDirectoryManager.sharedInstance
     var emergencyCall: String = "7274531901"  // change to 911 before release
     let BRAND_IDENTIFIER = "com.purefocus"
-    //var beaconUUID: String! = "DF371DDF-EFD8-4728-8BA4-DCE68F82741B"
     var beaconUUID: String! = "DF371DDF-EFD8-4728-8BA4-DCE68F82741B"{
         didSet{
             print("beaconUUID: \(beaconUUID!)")
         }
     }
-    var major: Int!/*{
-        didSet{
-            if major != nil{
-                print("major: \(major!)")
-            }
-        }
-    }*/
-    var minor: Int!/*{
-        didSet{
-            if minor != nil {
-                print("minor: \(minor!)")
-            }
-        }
-    }*/
+    var major: Int!
+    var minor: Int!
     var beaconRegion: CLBeaconRegion!
     var locationManager: CLLocationManager!
     var clBeacon: CLBeacon!
-    // MARK ADD CODE:  Add range detection using accuracy and/or rssi
+    // MARK ADD CODE:  Improve range detection using starting accuracy and/or rssi
     var startingAccuracy: Double!
     var lastFiveReadings: [Double] = []
     var staringRssi: Int!
     var blockList: [CXCallDirectoryPhoneNumber] = []
-
+    let alamo = AlamoNetwork()
+    
     var defaults = UserDefaults(suiteName: "group.purefocus")!
     
     var isLandscape: Bool{
@@ -129,12 +51,60 @@ class MainViewController: UIViewController{
             return false
         }
     }
-    var callCenter = CTCallCenter()
-    var callObserver = CXCallObserver()
     var isBlocking = false
-    var callDelegate: CXCallObserverDelegate!
-    var callManager: CXCallObserver!
-    // var contactList: [Int] = []
+
+    
+    @IBOutlet weak var callBlockStatusSwitch: UISwitch!
+    
+    @IBOutlet weak var setupLabel: UILabel!
+    
+    @IBOutlet weak var beaconButton: UIButton!
+    
+    @IBOutlet weak var logoImage: UIImageView!
+    
+    
+    @IBAction func callBackSwitchHit(_ sender: Any) {
+        
+        alamo.clientCheckIn()
+        // Turns tracking of beacons on/off, could later be used as Privacy mode feature
+        
+        if callBlockStatusSwitch.isOn{
+            print("callBlock On")
+            if let validBeaconRegion = beaconRegion{
+                locationManager.startRangingBeacons(in: validBeaconRegion)
+             }
+            if let validBeacon = clBeacon {
+                startingAccuracy = validBeacon.accuracy
+            }
+            
+        }else{
+             if let validBeaconRegion = beaconRegion{
+                locationManager.stopRangingBeacons(in: validBeaconRegion)
+                startingAccuracy = nil
+                inRangeTextField.text = ""
+                inRangeTextField.placeholder = validBeaconRegion.proximityUUID.description
+                inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
+             }else{
+                inRangeTextField.placeholder = "Hit plus to update beacon"
+                
+            }
+            print("callBlock Off")
+        }
+        
+    }
+    
+    @IBOutlet weak var inRangeTextField: UITextField!
+
+    @IBAction func emergencyCallHit(_ sender: Any) {
+        print("Calling 911")
+        call911()
+    }
+    
+    @IBAction func beaconButtonHit(_ sender: Any) {
+        print("Beacon button hit")
+        
+        
+    }
     
     // MARK ADD CODE: NSCoding, persist data instead of hard code UUID
     
@@ -154,9 +124,7 @@ class MainViewController: UIViewController{
         if minor == nil{
             minor = 34452
         }
-        loadContacts()
         defaults.set(blockList, forKey: "blockList")
-        // print("callDirManager: \(callDirManager)")
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -188,20 +156,6 @@ class MainViewController: UIViewController{
         return Int(digits)
     }
     
-    func loadContacts(){
-        let contactStore = CNContactStore()
-        let keys = [CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey, CNContactPhoneNumbersKey]
-        let request1 = CNContactFetchRequest(keysToFetch: keys  as [CNKeyDescriptor])
-        try! contactStore.enumerateContacts(with: request1) { (contact, error) in
-            for phone in contact.phoneNumbers {
-                if let validPhone = self.getDigits(phone: phone.value.description){
-                    // print("Phone: \(validPhone)")
-                    self.blockList.append(CXCallDirectoryPhoneNumber(validPhone))
-                }
-            }
-        }
-    }
-    
     func monitorBeacons(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -228,38 +182,7 @@ class MainViewController: UIViewController{
         locationManager.startMonitoring(for: beaconRegion)
         locationManager.startRangingBeacons(in: beaconRegion)
     }
-    func breakSandbox(){
-        call911()
-        exit(1)
-    }
     
-    func reloadExtension(){
-        validateExtension()
-        callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
-            // print("Reloading extension.")
-            // print(self.defaults.object(forKey: "blockList") ?? "Blocklist not set")
-            if let validError = error {
-                print("Error loading extension: \(validError)")
-            }
-        })
-    }
-    
-    func validateExtension(){
-        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.PureFocus.CallManager") { (cXCallDirectoryManagerEnabledStatus) in
-            switch cXCallDirectoryManagerEnabledStatus.0{
-            case .disabled:
-                // add code: present instructions modally
-                print("App extension disabled, pop instructions on enabling.")
-            case .unknown:
-                print("Unknown state of extension")
-            case .enabled:
-                print("Extension is enabled.")
-            }
-            if let validError = cXCallDirectoryManagerEnabledStatus.1{
-                print("Error: \(validError)")
-            }
-        }
-    }
     func call911(){
         if let url = URL(string: "tel://\(emergencyCall)"), UIApplication.shared.canOpenURL(url) {
             if #available(iOS 10, *) {
@@ -294,7 +217,7 @@ extension MainViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 
         if beacons.count > 0 {
-            // print(beacons.first!)
+            print(beacons.first!)
             // MARK ADD CODE:  Remove extension implementation and API calls
             
             if readingsAverage > 4.20{
