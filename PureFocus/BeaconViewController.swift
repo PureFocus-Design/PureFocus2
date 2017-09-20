@@ -9,8 +9,12 @@
 import Foundation
 import UIKit
 import CoreLocation
+import CoreBluetooth
 
 class BeaconViewController: UIViewController {
+    
+    var cbCentralManager: CBCentralManager!
+    var locationManager: CLLocationManager!
     
     @IBOutlet weak var uuID: UITextField!
     
@@ -23,6 +27,7 @@ class BeaconViewController: UIViewController {
             print("beaconUUID: \(beaconUUID!)")
         }
     }
+    /*
     var major: Int!{
         didSet{
             if major != nil{
@@ -36,31 +41,42 @@ class BeaconViewController: UIViewController {
                 print("minor: \(minor!)")
             }
         }
-    }
+    }*/
     
     override func viewDidLoad() {
         super.viewDidLoad()
         uuID.placeholder = beaconUUID
-        majorTextfield.placeholder = String(major)
-        minorTextField.placeholder = String(minor)
+        majorTextfield.placeholder = "IDFK"
+        minorTextField.placeholder = "REMOVE"
         uuID.delegate = self
         uuID.font = uuID.font!.withSize(UIFont.smallSystemFontSize)
         majorTextfield.textAlignment = .center
         minorTextField.textAlignment = .center
         majorTextfield.delegate = self
         minorTextField.delegate = self
+        cbCentralManager = CBCentralManager()
+        cbCentralManager.delegate = self
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.dismiss(animated: true) {
             print("Seguing back")
         }
+        /*
+        if UIAccessibilityIsGuidedAccessEnabled(){
+            print("Disabling SingleApp mode")
+            UIAccessibilityRequestGuidedAccessSession(false){
+                success in
+                print("Request SingleApp mode turn off success: \(success)")
+            }
+        }*/
     }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let mainVC = segue.destination as! MainViewController
         mainVC.beaconUUID = self.beaconUUID
-        mainVC.major = self.major
-        mainVC.minor = self.minor
+        //mainVC.major = self.major
+        //mainVC.minor = self.minor
     }
 
 }
@@ -96,6 +112,7 @@ extension BeaconViewController: UITextFieldDelegate{
             beaconUUID = textField.text!
             print("Inside UUID")
         }
+        /*
         if textField.accessibilityIdentifier == "Major"{
             major = Int(textField.text!)
             print("Inside Major")
@@ -103,8 +120,47 @@ extension BeaconViewController: UITextFieldDelegate{
         if textField.accessibilityIdentifier == "Minor"{
             print("Inside Minor")
             minor = Int(textField.text!)
-        }
+        }*/
         textField.resignFirstResponder()
         return true
+    }
+}
+extension BeaconViewController: CLLocationManagerDelegate{
+    
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        print("Checking for beacons")
+    }
+}
+extension BeaconViewController: CBCentralManagerDelegate{
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        print("Inside delegate callback of cbCentralManager.")
+        switch central.state{
+        case .poweredOn:
+            print("centralManager powered on")
+            cbCentralManager.scanForPeripherals(withServices: nil, options: nil)
+        case .poweredOff:
+            print("centralManager powered off")
+        case .resetting:
+            print("centralManager resetting")
+        case .unauthorized:
+            print("centralManager unauthorized")
+        case .unknown:
+            print("centralManager unknown")
+        case .unsupported:
+            print("centralManager unsupported")
+        }
+    }
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        if let advertisedName = advertisementData["kCBAdvDataLocalName"] as? String{
+            if advertisedName.contains("ion"){
+                print("Found ion beacon")
+                print("peripheral \(peripheral)")
+                beaconUUID = peripheral.identifier.uuidString
+                uuID.text = beaconUUID
+                print("advertisementData \(advertisementData)")
+                print("RSSI \(RSSI)")
+            }
+            cbCentralManager.stopScan()
+        }
     }
 }
