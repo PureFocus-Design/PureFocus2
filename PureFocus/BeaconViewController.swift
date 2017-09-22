@@ -14,15 +14,16 @@ class BeaconViewController: UIViewController {
     
     @IBOutlet weak var uuID: UITextField!
     
-    @IBOutlet weak var majorTextfield: UITextField!
+    @IBOutlet weak var statusTextfield: UITextField!
     
-    @IBOutlet weak var minorTextField: UITextField!
+    @IBOutlet weak var beaconList: UIPickerView!
     
     var beaconUUID: String!{
         didSet{
             print("beaconUUID: \(beaconUUID!)")
         }
     }
+    /*
     var major: Int!{
         didSet{
             if major != nil{
@@ -36,19 +37,21 @@ class BeaconViewController: UIViewController {
                 print("minor: \(minor!)")
             }
         }
-    }
+    }*/
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        uuID.placeholder = beaconUUID
-        majorTextfield.placeholder = String(major)
-        minorTextField.placeholder = String(minor)
-        uuID.delegate = self
-        uuID.font = uuID.font!.withSize(UIFont.smallSystemFontSize)
-        majorTextfield.textAlignment = .center
-        minorTextField.textAlignment = .center
-        majorTextfield.delegate = self
-        minorTextField.delegate = self
+        if let validUUID = beaconUUID {
+             uuID.placeholder = validUUID
+        }else{
+            uuID?.placeholder = "Tap to enter manually"
+        }
+        uuID?.delegate = self
+        uuID?.font = uuID.font!.withSize(UIFont.smallSystemFontSize)
+        statusTextfield?.textAlignment = .center
+        statusTextfield?.delegate = self
+        beaconList?.delegate = self
+        beaconList?.dataSource = self
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -59,8 +62,9 @@ class BeaconViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let mainVC = segue.destination as! MainViewController
         mainVC.beaconUUID = self.beaconUUID
+        /*
         mainVC.major = self.major
-        mainVC.minor = self.minor
+        mainVC.minor = self.minor*/
     }
 
 }
@@ -97,14 +101,65 @@ extension BeaconViewController: UITextFieldDelegate{
             print("Inside UUID")
         }
         if textField.accessibilityIdentifier == "Major"{
-            major = Int(textField.text!)
+            // major = Int(textField.text!)
             print("Inside Major")
         }
         if textField.accessibilityIdentifier == "Minor"{
             print("Inside Minor")
-            minor = Int(textField.text!)
+            // minor = Int(textField.text!)
         }
         textField.resignFirstResponder()
         return true
     }
+}
+extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
+    
+    
+    
+    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat{
+        print("widthForComponent: \(component)")
+        return CGFloat.init(100)
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat{
+        print("rowHeightForComponent: \(component)")
+        return CGFloat.init(100)
+    }
+    // these methods return either a plain NSString, a NSAttributedString, or a view (e.g UILabel) to display the row for the component.
+    // for the view versions, we cache any hidden and thus unused views and pass them back for reuse.
+    // If you return back a different object, the old one will be released. the view will be centered in the row rect
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?{
+        print("titleForRow: \(row)")
+        
+        // Dynamically fill titles with array of possible beacons
+        return "Beacon title"
+        
+    }
+    /*
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString?{
+        print("attributedTitleForRow: \(row)")
+    }// attributed title is favored if both methods are implemented
+ 
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView{
+        
+    }
+ */
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int){
+        print("didSelectRow: \(row)")
+    }
+    
+    // DATA SOURCE METHODS
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int{
+        print("numberOfComponents \(pickerView)")
+        return 0
+    }
+    
+    
+    // returns the # of rows in each component..
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
+        return 0
+    }
+    
 }

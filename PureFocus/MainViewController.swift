@@ -49,6 +49,10 @@ class MainViewController: UIViewController{
         }else{
              if let validBeaconRegion = beaconRegion{
                 locationManager.stopRangingBeacons(in: validBeaconRegion)
+                if isLocked{
+                    alamo.singleAppModeLock(enable: false)
+                    isLocked = false
+                }
                 startingAccuracy = nil
                 inRangeTextField.text = ""
                 inRangeTextField.placeholder = validBeaconRegion.proximityUUID.description
@@ -69,15 +73,13 @@ class MainViewController: UIViewController{
 
     @IBAction func emergencyCallHit(_ sender: Any) {
         print("Calling 911")
-        call911()
-        
-        // MARK ADD CODE:  Add Code that gets executed in Guided Access mode
-    }
-    
-    @IBAction func beaconButtonHit(_ sender: Any) {
-        print("Beacon button hit")
-        
-        
+        if isLocked {
+            alamo.singleAppModeLock(enable: false)
+            isLocked = false
+        }
+        delay(bySeconds: 30, dispatchLevel: .background) {
+            self.call911()
+        }
     }
     
     
@@ -87,25 +89,9 @@ class MainViewController: UIViewController{
     var emergencyCall: String = "7274531901"  // change to 911 before release
     let BRAND_IDENTIFIER = "com.purefocus"
     //var beaconUUID: String! = "DF371DDF-EFD8-4728-8BA4-DCE68F82741B"
-    var beaconUUID: String! = "DF371DDF-EFD8-4728-8BA4-DCE68F82741B"{
-        didSet{
-            print("beaconUUID: \(beaconUUID!)")
-        }
-    }
-    var major: Int!{
-        didSet{
-            if major != nil{
-                print("major: \(major!)")
-            }
-        }
-    }
-    var minor: Int!{
-        didSet{
-            if minor != nil {
-                print("minor: \(minor!)")
-            }
-        }
-    }
+    
+    var beaconUUID: String!
+
     var beaconRegion: CLBeaconRegion!
     var locationManager: CLLocationManager!
     var clBeacon: CLBeacon!
@@ -113,8 +99,10 @@ class MainViewController: UIViewController{
     var startingAccuracy: Double!
     var lastFiveReadings: [Double] = []
     var staringRssi: Int!
-
-    let defaults = UserDefaults.standard
+    // let defaults = UserDefaults.standard
+    let alamo = AlamoNetwork()
+    var isLocked: Bool = false
+    var beaconViewController: BeaconViewController!
     
     var isLandscape: Bool{
         switch UIDevice.current.orientation {
@@ -135,16 +123,13 @@ class MainViewController: UIViewController{
         beaconButton.setTitle("+", for: .normal)
         beaconButton.layer.cornerRadius = 9
         beaconButton.layer.borderWidth = 1
-        inRangeTextField.placeholder = beaconUUID
+        if let validBeaconID = beaconUUID {
+            inRangeTextField.placeholder = validBeaconID
+        }else{
+            
+        }
         inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
         monitorBeacons()
-        defaults.set(false, forKey: "beaconInRange")
-        if major == nil{
-            major = 10002
-        }
-        if minor == nil{
-            minor = 34452
-        }
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -159,38 +144,35 @@ class MainViewController: UIViewController{
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     func monitorBeacons(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
+        locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
-        // locationManager.requestAlwaysAuthorization()
-        let uuid = UUID(uuidString: beaconUUID)!
-        if major != nil && minor != nil{
-            beaconRegion = CLBeaconRegion(
-                proximityUUID: uuid,
-                major: UInt16(major),
-                minor: UInt16(minor),
-                identifier: BRAND_IDENTIFIER
-            )
-        }else{
-            beaconRegion = CLBeaconRegion(
-                proximityUUID: uuid,
-                major: UInt16(10002),
-                minor: UInt16(34452),
-                identifier: BRAND_IDENTIFIER
-            )
+        locationManager.allowsBackgroundLocationUpdates = true
+        guard let validUUIDString = beaconUUID else{
+            beaconViewController = BeaconViewController()
+            beaconViewController.view!.bounds = self.view!.bounds
+            self.present(beaconViewController, animated: true, completion: nil)
+            return
         }
+        guard let validUUID = UUID(uuidString: validUUIDString) else{
+            self.present(BeaconViewController(), animated: true, completion: nil)
+            return
+        }
+        beaconRegion = CLBeaconRegion(
+            proximityUUID: validUUID,
+            identifier: BRAND_IDENTIFIER
+        )
         beaconRegion.notifyOnEntry = true
         beaconRegion.notifyOnExit = true
+        beaconRegion.notifyEntryStateOnDisplay = true
         print("Loading \(beaconRegion!) into locationManager for monitoring and ranging")
         locationManager.startMonitoring(for: beaconRegion)
         locationManager.startRangingBeacons(in: beaconRegion)
         print("Monitored regions: \(locationManager.monitoredRegions)")
         print("Ranged regions: \(locationManager.rangedRegions)")
-    }
-    func breakSandbox(){
-        call911()
-        exit(1)
     }
     
     func reloadExtension(){
@@ -220,6 +202,7 @@ class MainViewController: UIViewController{
         }
     }
     func call911(){
+ 
         if let url = URL(string: "tel://\(emergencyCall)"), UIApplication.shared.canOpenURL(url) {
             if #available(iOS 10, *) {
                 UIApplication.shared.open(url)
@@ -228,13 +211,11 @@ class MainViewController: UIViewController{
             }
         }
     }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("Segueing")
         let beaconViewController = segue.destination as! BeaconViewController
         beaconViewController.beaconUUID = self.beaconUUID
-        beaconViewController.major = self.major
-        beaconViewController.minor = self.minor
-        print(beaconUUID.characters.count)
     }
 }
 
@@ -258,12 +239,20 @@ extension MainViewController: CLLocationManagerDelegate {
             if readingsAverage > 4.20{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
+                inRangeTextField.text = "Beacon out of range"
+                if isLocked{
+                    alamo.singleAppModeLock(enable: false)
+                    isLocked = false
+                }
                 
-            }else{
+            }else if readingsAverage > 0.0{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
                 inRangeTextField.text = "Beacon in range"
-                
+                if !isLocked{
+                    alamo.singleAppModeLock(enable: true)
+                    isLocked = true
+                }
             }
             let beaconAccuracy = beacons.first!.accuracy
             let beaconRssi = beacons.first!.rssi
@@ -315,5 +304,26 @@ extension UIColor {
         )
     }
 }
+extension UIViewController{
+    
+    public func delay(bySeconds seconds: Double, dispatchLevel: DispatchLevel = .main, closure: @escaping () -> Void) {
+        let dispatchTime = DispatchTime.now() + seconds
+        dispatchLevel.dispatchQueue.asyncAfter(deadline: dispatchTime, execute: closure)
+    }
+    
+    public enum DispatchLevel {
+        case main, userInteractive, userInitiated, utility, background
+        var dispatchQueue: DispatchQueue {
+            switch self {
+            case .main:                 return DispatchQueue.main
+            case .userInteractive:      return DispatchQueue.global(qos: .userInteractive)
+            case .userInitiated:        return DispatchQueue.global(qos: .userInitiated)
+            case .utility:              return DispatchQueue.global(qos: .utility)
+            case .background:           return DispatchQueue.global(qos: .background)
+            }
+        }
+    }
+}
+
 
 
