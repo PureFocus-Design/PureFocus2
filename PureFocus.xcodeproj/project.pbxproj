@@ -68,6 +68,7 @@
 		C53616FA1F476AC1004DDA48 /* LOGO Blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LOGO Blue.png"; sourceTree = "<group>"; };
 		C53616FC1F476AD9004DDA48 /* 911.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 911.png; sourceTree = "<group>"; };
 		C55498931F47745400103CE8 /* BeaconViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconViewController.swift; sourceTree = "<group>"; };
+		C5F459BB1F6C24EA00586F63 /* PureFocus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PureFocus.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +119,7 @@
 		C53616C31F47686A004DDA48 /* PureFocus */ = {
 			isa = PBXGroup;
 			children = (
+				C5F459BB1F6C24EA00586F63 /* PureFocus.entitlements */,
 				C53616C41F47686A004DDA48 /* AppDelegate.swift */,
 				C53616E61F476935004DDA48 /* MainViewController.swift */,
 				C55498931F47745400103CE8 /* BeaconViewController.swift */,
@@ -220,6 +222,11 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 35WYFGA6T2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					C53616D41F47686A004DDA48 = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -437,6 +444,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PureFocus/PureFocus.entitlements;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
 				INFOPLIST_FILE = PureFocus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -451,6 +459,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PureFocus/PureFocus.entitlements;
 				DEVELOPMENT_TEAM = 35WYFGA6T2;
 				INFOPLIST_FILE = PureFocus/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

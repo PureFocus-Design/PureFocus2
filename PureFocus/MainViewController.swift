@@ -11,6 +11,9 @@ import CallKit
 import CoreLocation
 import Foundation
 import AddressBook
+import CoreTelephony
+import Contacts
+import Alamofire
 
 
 class MainViewController: UIViewController{
@@ -21,6 +24,7 @@ class MainViewController: UIViewController{
     // You can use call911() and quit together to break sandbox
     
     // MARK ADD CODE:  Use starting point for greater accuracy
+
     
     @IBOutlet weak var callBlockStatusSwitch: UISwitch!
     
@@ -59,12 +63,7 @@ class MainViewController: UIViewController{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
              }else{
                 inRangeTextField.placeholder = "Hit plus to update beacon"
-                
             }
-            print("callBlock Off")  //  = Dongle out of range
-            // MARK ADD CODE: Feed it an empty list
-            // reloadExtension()
-            // exit(1)
         }
         
     }
@@ -73,6 +72,7 @@ class MainViewController: UIViewController{
 
     @IBAction func emergencyCallHit(_ sender: Any) {
         print("Calling 911")
+<<<<<<< HEAD
         if isLocked {
             alamo.singleAppModeLock(enable: false)
             isLocked = false
@@ -80,6 +80,15 @@ class MainViewController: UIViewController{
         delay(bySeconds: 30, dispatchLevel: .background) {
             self.call911()
         }
+=======
+        call911()
+        
+        // MARK ADD CODE:  Add Code that gets executed in Guided Access mode
+    }
+    
+    @IBAction func beaconButtonHit(_ sender: Any) {
+        print("Beacon button hit")
+// >>>>>>> BestWorkingCopy
     }
     
     
@@ -89,9 +98,32 @@ class MainViewController: UIViewController{
     var emergencyCall: String = "7274531901"  // change to 911 before release
     let BRAND_IDENTIFIER = "com.purefocus"
     //var beaconUUID: String! = "DF371DDF-EFD8-4728-8BA4-DCE68F82741B"
+// <<<<<<< HEAD
     
     var beaconUUID: String!
 
+// =======
+    var beaconUUID: String! = "DF371DDF-EFD8-4728-8BA4-DCE68F82741B"{
+        didSet{
+            print("beaconUUID: \(beaconUUID!)")
+        }
+    }
+    /*
+    var major: Int!{
+        didSet{
+            if major != nil{
+                print("major: \(major!)")
+            }
+        }
+    }
+    var minor: Int!{
+        didSet{
+            if minor != nil {
+                print("minor: \(minor!)")
+            }
+        }
+    }*/
+// >>>>>>> BestWorkingCopy
     var beaconRegion: CLBeaconRegion!
     var locationManager: CLLocationManager!
     var clBeacon: CLBeacon!
@@ -99,10 +131,23 @@ class MainViewController: UIViewController{
     var startingAccuracy: Double!
     var lastFiveReadings: [Double] = []
     var staringRssi: Int!
+// <<<<<<< HEAD
     // let defaults = UserDefaults.standard
     let alamo = AlamoNetwork()
     var isLocked: Bool = false
     var beaconViewController: BeaconViewController!
+// =======
+    var blockList: [CXCallDirectoryPhoneNumber] = [CXCallDirectoryPhoneNumber.init(17274531901)]
+    var callCenter = CTCallCenter()
+    var callObserver = CXCallObserver()
+    var isBlocking = false
+    var callDelegate: CXCallObserverDelegate!
+    var callManager: CXCallObserver!
+    var locationTrackingAuthorized: Bool = false
+
+    let defaults = UserDefaults(suiteName: "group.purefocus")!
+    var alamo = AlamoNetwork()
+// >>>>>>> BestWorkingCopy
     
     var isLandscape: Bool{
         switch UIDevice.current.orientation {
@@ -130,6 +175,29 @@ class MainViewController: UIViewController{
         }
         inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
         monitorBeacons()
+// <<<<<<< HEAD
+// =======
+        locationManager.allowsBackgroundLocationUpdates = true
+        locationTrackingAuthorized = locationManager.allowsBackgroundLocationUpdates
+        print("Allows background updates: \(locationTrackingAuthorized)")
+        /*
+        defaults.set(false, forKey: "beaconInRange")
+        defaults.synchronize()
+        if major == nil{
+            major = 10002
+        }
+        if minor == nil{
+            minor = 34452
+        }
+        // loadContacts()
+        defaults.set(blockList, forKey: "blockList")
+        print(defaults.bool(forKey: "beaconInRange"))
+        UIAccessibilityRequestGuidedAccessSession(true){
+            success in
+            print("Request guided access success: \(success)")
+        }*/
+        
+// >>>>>>> BestWorkingCopy
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -144,12 +212,47 @@ class MainViewController: UIViewController{
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+// <<<<<<< HEAD
+// =======
+    func getDigits(phone :String)->Int?{
+        var digits = phone.components(separatedBy: "digits=").last!
+        digits = digits.components(separatedBy: ">").first!
+        if digits.contains("+"){
+            digits.characters.removeFirst(1)
+        }
+        if digits.contains(";"){
+            digits.characters.removeLast(5)
+        }
+        if digits.characters.count == 10{
+            digits.characters.insert("1", at: digits.characters.startIndex)
+        }
+        if digits.characters.count < 10{
+            return nil
+        }
+        return Int(digits)
+    }
+    /*
+    func loadContacts(){
+        let contactStore = CNContactStore()
+        let keys = [CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey, CNContactPhoneNumbersKey]
+        let request1 = CNContactFetchRequest(keysToFetch: keys  as [CNKeyDescriptor])
+        try! contactStore.enumerateContacts(with: request1) { (contact, error) in
+            for phone in contact.phoneNumbers {
+                if let validPhone = self.getDigits(phone: phone.value.description){
+                    print("Phone: \(validPhone)")
+                    self.blockList.append(CXCallDirectoryPhoneNumber(validPhone))
+                }
+            }
+        }
+    }*/
+// >>>>>>> BestWorkingCopy
     
     func monitorBeacons(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
+// <<<<<<< HEAD
         locationManager.allowsBackgroundLocationUpdates = true
         guard let validUUIDString = beaconUUID else{
             beaconViewController = BeaconViewController()
@@ -165,6 +268,18 @@ class MainViewController: UIViewController{
             proximityUUID: validUUID,
             identifier: BRAND_IDENTIFIER
         )
+// =======
+        // locationManager.requestAlwaysAuthorization()
+        //let uuid = UUID(uuidString: beaconUUID)!
+        beaconRegion = CLBeaconRegion(proximityUUID: UUID(uuidString: beaconUUID)!, major: 10002, minor: 34452, identifier: BRAND_IDENTIFIER)
+        /*
+         if major == nil{
+         major = 10002
+         }
+         if minor == nil{
+         minor = 34452
+         }*/
+// >>>>>>> BestWorkingCopy
         beaconRegion.notifyOnEntry = true
         beaconRegion.notifyOnExit = true
         beaconRegion.notifyEntryStateOnDisplay = true
@@ -177,7 +292,7 @@ class MainViewController: UIViewController{
     
     func reloadExtension(){
         validateExtension()
-        callDirManager.reloadExtension(withIdentifier: "com.dimez.SimpleButtonDemo", completionHandler: { (error) in
+        callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
             print("Reloading extension.")
             if let validError = error {
                 print("Error loading extension: \(validError)")
@@ -186,7 +301,7 @@ class MainViewController: UIViewController{
     }
     
     func validateExtension(){
-        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.SimpleButtonDemo") { (cXCallDirectoryManagerEnabledStatus) in
+        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.PureFocus.CallManager") { (cXCallDirectoryManagerEnabledStatus) in
             switch cXCallDirectoryManagerEnabledStatus.0{
             case .disabled:
                 // add code: present instructions modally
@@ -202,7 +317,17 @@ class MainViewController: UIViewController{
         }
     }
     func call911(){
+// <<<<<<< HEAD
  
+// =======
+        if UIAccessibilityIsGuidedAccessEnabled(){
+            print("Disabling SingleApp mode")
+            UIAccessibilityRequestGuidedAccessSession(false){
+                success in
+                print("Request SingleApp mode turn off success: \(success)")
+            }
+        }
+// >>>>>>> BestWorkingCopy
         if let url = URL(string: "tel://\(emergencyCall)"), UIApplication.shared.canOpenURL(url) {
             if #available(iOS 10, *) {
                 UIApplication.shared.open(url)
@@ -216,6 +341,14 @@ class MainViewController: UIViewController{
         print("Segueing")
         let beaconViewController = segue.destination as! BeaconViewController
         beaconViewController.beaconUUID = self.beaconUUID
+// <<<<<<< HEAD
+// =======
+        /*
+        beaconViewController.major = self.major
+        beaconViewController.minor = self.minor*/
+        print("Beacon characters:")
+        print(beaconUUID.characters.count)
+// >>>>>>> BestWorkingCopy
     }
 }
 
@@ -230,28 +363,68 @@ extension MainViewController: CLLocationManagerDelegate {
         }
         return total/Double(lastFiveReadings.count)
     }
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status{
+        case .authorizedAlways:
+            locationTrackingAuthorized = true
+        default:
+            return
+        }
+    }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 
-        if beacons.count > 0 {
+        if beacons.count > 0 && locationTrackingAuthorized {
 
-            // MARK ADD CODE:  currentlysaving reference to beacon, instead sample several
             if readingsAverage > 4.20{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
                 inRangeTextField.text = "Beacon out of range"
+// <<<<<<< HEAD
                 if isLocked{
                     alamo.singleAppModeLock(enable: false)
                     isLocked = false
+// =======
+                if self.isBlocking == true{
+                    // defaults.set(false, forKey: "beaconInRange")
+                    self.isBlocking = false
+                    // reloadExtension()
+                    if UIAccessibilityIsGuidedAccessEnabled(){
+                        print("Disabling SingleApp mode")
+                        /*
+                        UIAccessibilityRequestGuidedAccessSession(false){
+                            success in
+                            print("Request SingleApp mode turn off success: \(success)")
+                        }*/
+                        // Removed autonomous entry into single app mode in favor of API calls
+                        alamo.singleAppModeLock(enable: false)
+                    }
+// >>>>>>> BestWorkingCopy
                 }
                 
             }else if readingsAverage > 0.0{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
                 inRangeTextField.textAlignment = .center
                 inRangeTextField.text = "Beacon in range"
+// <<<<<<< HEAD
                 if !isLocked{
                     alamo.singleAppModeLock(enable: true)
                     isLocked = true
+// =======
+                if self.isBlocking == false{
+                    // defaults.set(true, forKey: "beaconInRange")
+                    self.isBlocking = true
+                    // reloadExtension()
+                    /*
+                    if !UIAccessibilityIsGuidedAccessEnabled(){
+                        print("Enabling single app mode success.")
+                        UIAccessibilityRequestGuidedAccessSession(true){
+                            success in
+                            print("Request single app mode on success: \(success)")
+                        }
+                    }*/
+                    alamo.singleAppModeLock(enable: true)
+// >>>>>>> BestWorkingCopy
                 }
             }
             let beaconAccuracy = beacons.first!.accuracy
@@ -325,5 +498,11 @@ extension UIViewController{
     }
 }
 
+
+extension CLProximity: CustomStringConvertible{
+    public var description: String{
+        return String(self.rawValue)
+    }
+}
 
 
