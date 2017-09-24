@@ -27,25 +27,9 @@ class BeaconViewController: UIViewController {
             print("beaconUUID: \(beaconUUID!)")
         }
     }
-    /*
-    var major: Int!{
-        didSet{
-            if major != nil{
-                print("major: \(major!)")
-            }
-        }
-    }
-    var minor: Int!{
-        didSet{
-            if minor != nil {
-                print("minor: \(minor!)")
-            }
-        }
-    }*/
     
     override func viewDidLoad() {
         super.viewDidLoad()
-// <<<<<<< HEAD
         if let validUUID = beaconUUID {
              uuID.placeholder = validUUID
         }else{
@@ -57,19 +41,13 @@ class BeaconViewController: UIViewController {
         statusTextfield?.delegate = self
         beaconList?.delegate = self
         beaconList?.dataSource = self
-// =======
         uuID.placeholder = beaconUUID
-        majorTextfield.placeholder = "IDFK"
-        minorTextField.placeholder = "REMOVE"
         uuID.delegate = self
         uuID.font = uuID.font!.withSize(UIFont.smallSystemFontSize)
-        majorTextfield.textAlignment = .center
-        minorTextField.textAlignment = .center
-        majorTextfield.delegate = self
-        minorTextField.delegate = self
+        statusTextfield.textAlignment = .center
+        uuID.textAlignment = .center
         cbCentralManager = CBCentralManager()
         cbCentralManager.delegate = self
-// >>>>>>> BestWorkingCopy
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -124,35 +102,23 @@ extension BeaconViewController: UITextFieldDelegate{
             beaconUUID = textField.text!
             print("Inside UUID")
         }
-        /*
-        if textField.accessibilityIdentifier == "Major"{
-            // major = Int(textField.text!)
-            print("Inside Major")
-        }
-        if textField.accessibilityIdentifier == "Minor"{
-            print("Inside Minor")
-            // minor = Int(textField.text!)
-        }
-            minor = Int(textField.text!)
-        }*/
-// >>>>>>> BestWorkingCopy
         textField.resignFirstResponder()
         return true
     }
 }
-// <<<<<<< HEAD
+
 extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     
     
     
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat{
         print("widthForComponent: \(component)")
-        return CGFloat.init(100)
+        return CGFloat.init(200)
     }
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat{
         print("rowHeightForComponent: \(component)")
-        return CGFloat.init(100)
+        return CGFloat.init(50)
     }
     // these methods return either a plain NSString, a NSAttributedString, or a view (e.g UILabel) to display the row for the component.
     // for the view versions, we cache any hidden and thus unused views and pass them back for reuse.
@@ -182,16 +148,15 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int{
         print("numberOfComponents \(pickerView)")
-        return 0
+        return 1
     }
     
     
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
-        return 0
+        return 1
     }
-    
-// =======
+}
 extension BeaconViewController: CLLocationManagerDelegate{
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
@@ -230,5 +195,4 @@ extension BeaconViewController: CBCentralManagerDelegate{
             cbCentralManager.stopScan()
         }
     }
-// >>>>>>> BestWorkingCopy
 }

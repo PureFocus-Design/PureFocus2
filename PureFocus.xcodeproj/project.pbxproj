@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B5279FA21631C607ACAC1C7 /* Pods_PureFocus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884FD051A617D23C4D2CF3F3 /* Pods_PureFocus.framework */; };
+		86F850B472C858114DCA3676 /* Pods_PureFocusTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CA304FB2BAB9384A7DE40A4 /* Pods_PureFocusTests.framework */; };
 		C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616C41F47686A004DDA48 /* AppDelegate.swift */; };
 		C53616CF1F47686A004DDA48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C53616CD1F47686A004DDA48 /* LaunchScreen.storyboard */; };
 		C53616DA1F47686A004DDA48 /* PureFocusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616D91F47686A004DDA48 /* PureFocusTests.swift */; };
@@ -18,6 +20,8 @@
 		C53616FB1F476AC1004DDA48 /* LOGO Blue.png in Resources */ = {isa = PBXBuildFile; fileRef = C53616FA1F476AC1004DDA48 /* LOGO Blue.png */; };
 		C53616FD1F476AD9004DDA48 /* 911.png in Resources */ = {isa = PBXBuildFile; fileRef = C53616FC1F476AD9004DDA48 /* 911.png */; };
 		C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55498931F47745400103CE8 /* BeaconViewController.swift */; };
+		C5617A8E1F75D27F001AA52B /* Alamo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5617A8D1F75D27F001AA52B /* Alamo.swift */; };
+		C5617A901F767F99001AA52B /* BluetoothDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5617A8F1F767F99001AA52B /* BluetoothDevice.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +56,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1A5CA97BAEE4A7275EA68BF9 /* Pods-PureFocusTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocusTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests.release.xcconfig"; sourceTree = "<group>"; };
+		210E143097E2E7FCDDBA95D4 /* Pods-PureFocus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocus.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus.debug.xcconfig"; sourceTree = "<group>"; };
+		3CA304FB2BAB9384A7DE40A4 /* Pods_PureFocusTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PureFocusTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		69F7F08ECF97C5239834F54F /* Pods-PureFocus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocus.release.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus.release.xcconfig"; sourceTree = "<group>"; };
+		884FD051A617D23C4D2CF3F3 /* Pods_PureFocus.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PureFocus.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C53616C11F47686A004DDA48 /* PureFocus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PureFocus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C53616C41F47686A004DDA48 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C53616CE1F47686A004DDA48 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -68,7 +77,10 @@
 		C53616FA1F476AC1004DDA48 /* LOGO Blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LOGO Blue.png"; sourceTree = "<group>"; };
 		C53616FC1F476AD9004DDA48 /* 911.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 911.png; sourceTree = "<group>"; };
 		C55498931F47745400103CE8 /* BeaconViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconViewController.swift; sourceTree = "<group>"; };
+		C5617A8D1F75D27F001AA52B /* Alamo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alamo.swift; sourceTree = "<group>"; };
+		C5617A8F1F767F99001AA52B /* BluetoothDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothDevice.swift; sourceTree = "<group>"; };
 		C5F459BB1F6C24EA00586F63 /* PureFocus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PureFocus.entitlements; sourceTree = "<group>"; };
+		FAC323786DA0AC9983D63AC8 /* Pods-PureFocusTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocusTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B5279FA21631C607ACAC1C7 /* Pods_PureFocus.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				86F850B472C858114DCA3676 /* Pods_PureFocusTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +110,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		00F25DCAA410BB0C955947D3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				884FD051A617D23C4D2CF3F3 /* Pods_PureFocus.framework */,
+				3CA304FB2BAB9384A7DE40A4 /* Pods_PureFocusTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		990D9AF80E08A7D6B4484173 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				210E143097E2E7FCDDBA95D4 /* Pods-PureFocus.debug.xcconfig */,
+				69F7F08ECF97C5239834F54F /* Pods-PureFocus.release.xcconfig */,
+				FAC323786DA0AC9983D63AC8 /* Pods-PureFocusTests.debug.xcconfig */,
+				1A5CA97BAEE4A7275EA68BF9 /* Pods-PureFocusTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		C53616B81F47686A004DDA48 = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +137,8 @@
 				C53616D81F47686A004DDA48 /* PureFocusTests */,
 				C53616EF1F4769BF004DDA48 /* CallManager */,
 				C53616C21F47686A004DDA48 /* Products */,
+				990D9AF80E08A7D6B4484173 /* Pods */,
+				00F25DCAA410BB0C955947D3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -121,7 +157,9 @@
 			children = (
 				C5F459BB1F6C24EA00586F63 /* PureFocus.entitlements */,
 				C53616C41F47686A004DDA48 /* AppDelegate.swift */,
+				C5617A8D1F75D27F001AA52B /* Alamo.swift */,
 				C53616E61F476935004DDA48 /* MainViewController.swift */,
+				C5617A8F1F767F99001AA52B /* BluetoothDevice.swift */,
 				C55498931F47745400103CE8 /* BeaconViewController.swift */,
 				C53616E81F476960004DDA48 /* Assets.xcassets */,
 				C53616E41F47691E004DDA48 /* Main.storyboard */,
@@ -158,10 +196,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C53616DE1F47686A004DDA48 /* Build configuration list for PBXNativeTarget "PureFocus" */;
 			buildPhases = (
+				D48932524F8BB10C231541F6 /* [CP] Check Pods Manifest.lock */,
 				C53616BD1F47686A004DDA48 /* Sources */,
 				C53616BE1F47686A004DDA48 /* Frameworks */,
 				C53616BF1F47686A004DDA48 /* Resources */,
 				C53616F91F4769BF004DDA48 /* Embed App Extensions */,
+				2A1F154DA564B39972EE0194 /* [CP] Embed Pods Frameworks */,
+				94ABAA9018942DEC1BECA963 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -177,9 +218,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C53616E11F47686A004DDA48 /* Build configuration list for PBXNativeTarget "PureFocusTests" */;
 			buildPhases = (
+				2D5DEA8F2EF6EA429BE23A81 /* [CP] Check Pods Manifest.lock */,
 				C53616D11F47686A004DDA48 /* Sources */,
 				C53616D21F47686A004DDA48 /* Frameworks */,
 				C53616D31F47686A004DDA48 /* Resources */,
+				63597F21E2958F63E51C3A1B /* [CP] Embed Pods Frameworks */,
+				DD8CD0DCE9CCAEBD2711CA33 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -290,11 +334,106 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2A1F154DA564B39972EE0194 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2D5DEA8F2EF6EA429BE23A81 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		63597F21E2958F63E51C3A1B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		94ABAA9018942DEC1BECA963 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D48932524F8BB10C231541F6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		DD8CD0DCE9CCAEBD2711CA33 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		C53616BD1F47686A004DDA48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5617A8E1F75D27F001AA52B /* Alamo.swift in Sources */,
+				C5617A901F767F99001AA52B /* BluetoothDevice.swift in Sources */,
 				C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */,
 				C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */,
 				C53616E71F476935004DDA48 /* MainViewController.swift in Sources */,
@@ -441,6 +580,7 @@
 		};
 		C53616DF1F47686A004DDA48 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 210E143097E2E7FCDDBA95D4 /* Pods-PureFocus.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -456,6 +596,7 @@
 		};
 		C53616E01F47686A004DDA48 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69F7F08ECF97C5239834F54F /* Pods-PureFocus.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -471,6 +612,7 @@
 		};
 		C53616E21F47686A004DDA48 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FAC323786DA0AC9983D63AC8 /* Pods-PureFocusTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -486,6 +628,7 @@
 		};
 		C53616E31F47686A004DDA48 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A5CA97BAEE4A7275EA68BF9 /* Pods-PureFocusTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";

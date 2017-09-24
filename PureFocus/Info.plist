@@ -26,8 +26,10 @@
 	<string>Main</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App tracks your proximity to beacon</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App tracks your proximity to beacon</string>
 	<key>NSContactsUsageDescription</key>
-	<string>App blocks your contacts</string>
+	<string>App can whitelist your contacts</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -35,6 +37,7 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
