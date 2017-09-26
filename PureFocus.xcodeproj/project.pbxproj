@@ -22,6 +22,9 @@
 		C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55498931F47745400103CE8 /* BeaconViewController.swift */; };
 		C5617A8E1F75D27F001AA52B /* Alamo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5617A8D1F75D27F001AA52B /* Alamo.swift */; };
 		C5617A901F767F99001AA52B /* BluetoothDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5617A8F1F767F99001AA52B /* BluetoothDevice.swift */; };
+		C5617A921F78160A001AA52B /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5617A911F78160A001AA52B /* User.swift */; };
+		C5617A941F798733001AA52B /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5617A931F798733001AA52B /* AppState.swift */; };
+		C5617A961F7999E5001AA52B /* WhiteListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5617A951F7999E5001AA52B /* WhiteListVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +82,9 @@
 		C55498931F47745400103CE8 /* BeaconViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconViewController.swift; sourceTree = "<group>"; };
 		C5617A8D1F75D27F001AA52B /* Alamo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alamo.swift; sourceTree = "<group>"; };
 		C5617A8F1F767F99001AA52B /* BluetoothDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothDevice.swift; sourceTree = "<group>"; };
+		C5617A911F78160A001AA52B /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C5617A931F798733001AA52B /* AppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		C5617A951F7999E5001AA52B /* WhiteListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhiteListVC.swift; sourceTree = "<group>"; };
 		C5F459BB1F6C24EA00586F63 /* PureFocus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PureFocus.entitlements; sourceTree = "<group>"; };
 		FAC323786DA0AC9983D63AC8 /* Pods-PureFocusTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocusTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocusTests/Pods-PureFocusTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -159,7 +165,10 @@
 				C53616C41F47686A004DDA48 /* AppDelegate.swift */,
 				C5617A8D1F75D27F001AA52B /* Alamo.swift */,
 				C53616E61F476935004DDA48 /* MainViewController.swift */,
+				C5617A951F7999E5001AA52B /* WhiteListVC.swift */,
+				C5617A931F798733001AA52B /* AppState.swift */,
 				C5617A8F1F767F99001AA52B /* BluetoothDevice.swift */,
+				C5617A911F78160A001AA52B /* User.swift */,
 				C55498931F47745400103CE8 /* BeaconViewController.swift */,
 				C53616E81F476960004DDA48 /* Assets.xcassets */,
 				C53616E41F47691E004DDA48 /* Main.storyboard */,
@@ -434,9 +443,12 @@
 			files = (
 				C5617A8E1F75D27F001AA52B /* Alamo.swift in Sources */,
 				C5617A901F767F99001AA52B /* BluetoothDevice.swift in Sources */,
+				C5617A941F798733001AA52B /* AppState.swift in Sources */,
+				C5617A921F78160A001AA52B /* User.swift in Sources */,
 				C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */,
 				C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */,
 				C53616E71F476935004DDA48 /* MainViewController.swift in Sources */,
+				C5617A961F7999E5001AA52B /* WhiteListVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

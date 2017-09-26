@@ -11,20 +11,56 @@ import CallKit
 import CoreLocation
 import Foundation
 import AddressBook
-// import CoreTelephony
 import Contacts
 import Alamofire
 
 
 class MainViewController: UIViewController{
     
-    // Future implementation:  You could write an API that checked how long the app has been running
-    // Contacts someone if it's off.
+    // Future implementation:  You could write an API call that checked how long the app has been running
+    // and contacts someone if it's off.
     
-    // You can use call911() and quit together to break sandbox
+    // Future refinement:  Consider weighted average vs straight average power rating
     
-    // MARK ADD CODE:  Use starting point for greater accuracy
+    // PROPERTIES
     
+    // Networking
+    
+    let alamo = AlamoNetwork()
+    
+    // Whitelisting
+    
+    var callDirManager = CXCallDirectoryManager.sharedInstance
+    var emergencyCall: String = "7274531901"  // change to 911 before release
+    let defaults = UserDefaults(suiteName: "group.purefocus")!
+    
+    // Tracking Beacons
+    // might remove isBlocking/isLocked for AppState
+    // currently, isBlocking indicates that the beacon is in range, isLocked indicates single app mode
+    
+    var isBlocking = false
+    var isLocked: Bool = false
+    
+    var locationManager: CLLocationManager!
+    let BRAND_IDENTIFIER = "com.purefocus"
+    var beaconRegions: [CLBeaconRegion]{
+        var beaconRegions: [CLBeaconRegion] = []
+        for beacon in bluetoothDevices{
+            let beaconRegion = CLBeaconRegion.init(proximityUUID: beacon.uuID, identifier: BRAND_IDENTIFIER)
+            beaconRegion.notifyOnEntry = true
+            beaconRegion.notifyOnExit = true
+            beaconRegion.notifyEntryStateOnDisplay = true
+            beaconRegions.append(beaconRegion)
+        }
+        return beaconRegions
+    }
+    var lastFiveReadings: [Double] = []
+    
+    // Device setup
+    
+    var beaconViewController: BeaconViewController!
+    var locationTrackingAuthorized: Bool = false
+    var bluetoothDevices: [BluetoothDevice] = []
     
     @IBOutlet weak var callBlockStatusSwitch: UISwitch!
     
@@ -42,37 +78,11 @@ class MainViewController: UIViewController{
     
     @IBOutlet weak var SettingsVCButton: UIButton!
     
+    @IBOutlet weak var iconView: UIView!
+    
     @IBAction func callBackSwitchHit(_ sender: Any) {
         
-        // Turns tracking of beacons on/off, could later be used as Privacy mode feature
-        
-        if callBlockStatusSwitch.isOn{ // = Dongle in range
-            print("callBlock On")
-            if let validBeaconRegion = beaconRegion{
-                locationManager.startRangingBeacons(in: validBeaconRegion)
-            }
-            /*
-             if let validBeacon = clBeacon {
-             startingAccuracy = validBeacon.accuracy
-             }*/
-            // MARK ADD CODE: Tell it to use default list to block calls
-            // reloadExtension()
-            
-        }else{
-            if let validBeaconRegion = beaconRegion{
-                locationManager.stopRangingBeacons(in: validBeaconRegion)
-                if isLocked{
-                    alamo.singleAppModeLock(enable: false)
-                    isLocked = false
-                }
-                // startingAccuracy = nil
-                inRangeTextField.text = ""
-                inRangeTextField.placeholder = validBeaconRegion.proximityUUID.description
-                inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
-            }else{
-                inRangeTextField.placeholder = "Hit plus to update beacon"
-            }
-        }
+        // Not used, probably will delete and move to settings
         
     }
     
@@ -80,50 +90,24 @@ class MainViewController: UIViewController{
     
     @IBAction func emergencyCallHit(_ sender: Any) {
         print("Calling 911")
+        
+        // Mark add code
+        
         if isLocked {
             alamo.singleAppModeLock(enable: false)
             isLocked = false
         }
+        if UIAccessibilityIsGuidedAccessEnabled(){
+            print("Disabling SingleApp mode")
+            UIAccessibilityRequestGuidedAccessSession(false){
+                success in
+                print("Request SingleApp mode turn off success: \(success)")
+            }
+        }
         delay(bySeconds: 30, dispatchLevel: .background) {
             self.call911()
         }
-        call911()
     }
-    
-    // variables
-    
-    var callDirManager = CXCallDirectoryManager.sharedInstance
-    var emergencyCall: String = "7274531901"  // change to 911 before release
-    let BRAND_IDENTIFIER = "com.purefocus"
-    var beaconUUID: String!
-    var beaconRegion: CLBeaconRegion!
-    var locationManager: CLLocationManager!
-    var clBeacon: CLBeacon!
-    // MARK ADD CODE:  Add range detection using accuracy and/or rssi
-    // var startingAccuracy: Double!
-    var lastFiveReadings: [Double] = []
-    var staringRssi: Int!
-    let alamo = AlamoNetwork()
-    var isLocked: Bool = false
-    var beaconViewController: BeaconViewController!
-    
-    // var callCenter = CTCallCenter()
-    var callObserver = CXCallObserver()
-    var isBlocking = false
-    var callDelegate: CXCallObserverDelegate!
-    var callManager: CXCallObserver!
-    var locationTrackingAuthorized: Bool = false
-    let defaults = UserDefaults(suiteName: "group.purefocus")!
-    
-    // MARK NEW CODE:  SEND WHITELIST TO EXTENSION, CALLS BREAK SINGLE APP MODE
-    
-    var whitelist: [String:CXCallDirectoryPhoneNumber] = [:]
-    var contactlist: [String:CXCallDirectoryPhoneNumber] = [:]
-    
-    // the new group key to send data back and forth will be called whitelist and another bool to say break SingleApp mode
-    
-    // var blockList: [CXCallDirectoryPhoneNumber] = [CXCallDirectoryPhoneNumber.init(17274531901)]
-
     
     var isLandscape: Bool{
         switch UIDevice.current.orientation {
@@ -138,43 +122,40 @@ class MainViewController: UIViewController{
     
     // MARK ADD CODE: NSCoding, persist data instead of hard code UUID
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    func setupView(){
         beaconButton.backgroundColor = UIColor.init(rgb: 0x228B22)
         beaconButton.setTitle("+", for: .normal)
         beaconButton.layer.cornerRadius = 9
         beaconButton.layer.borderWidth = 1
         mainVCButton.layer.cornerRadius = 9
         mainVCButton.layer.borderWidth  = 1
-        
-        
-        if let validBeaconID = beaconUUID {
+        deviceVCButton.layer.cornerRadius = 9
+        deviceVCButton.layer.borderWidth = 1
+        allowVCButton.layer.cornerRadius = 9
+        allowVCButton.layer.borderWidth = 1
+        SettingsVCButton.layer.cornerRadius = 9
+        SettingsVCButton.layer.borderWidth = 1
+        iconView.layer.cornerRadius = 9
+        iconView.layer.borderWidth = 1
+        if let validBeacon = bluetoothDevices.last {
             inRangeTextField.textAlignment = .left
-            inRangeTextField.placeholder = validBeaconID
+            inRangeTextField.placeholder = validBeacon.uuID.uuidString
         }else{
             inRangeTextField.textAlignment = .center
             inRangeTextField.placeholder = "Tap + button to add beacon"
         }
         inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
-        // monitorBeacons()
-        
-        // locationManager.allowsBackgroundLocationUpdates = true
-        // locationTrackingAuthorized = locationManager.allowsBackgroundLocationUpdates
-        print("Allows background updates: \(locationTrackingAuthorized)")
-        /*
-         
-         MARK ADD CODE: ADD METHODS TO GROUP NUMBER AND WHITELIST
-         
-         defaults.set(false, forKey: "beaconInRange")
-         defaults.synchronize()
-         // loadContacts()
-         defaults.set(blockList, forKey: "blockList")
-         print(defaults.bool(forKey: "beaconInRange"))
-         UIAccessibilityRequestGuidedAccessSession(true){
-         success in
-         print("Request guided access success: \(success)")
-         }*/
-        defaults.set(false, forKey: <#T##String#>)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupView()
+        if locationTrackingAuthorized{
+            initializeLocationManager()
+            rangeBeacons()
+        }else{
+            print("Seguing to auth page")
+        }
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -208,68 +189,35 @@ class MainViewController: UIViewController{
         return Int(digits)
     }
     
-    func loadContacts(){
-        let contactStore = CNContactStore()
-        let keys = [CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey, CNContactPhoneNumbersKey]
-        let request1 = CNContactFetchRequest(keysToFetch: keys  as [CNKeyDescriptor])
-        try! contactStore.enumerateContacts(with: request1) { (contact, error) in
-            for phone in contact.phoneNumbers {
-                if let validPhone = self.getDigits(phone: phone.value.description){
-                    print("Phone: \(validPhone)")
-                    
-                    // MARK ADD CODE:  Pull names and make dictionary for whitelist
-                    
-                    // self.blockList.append(CXCallDirectoryPhoneNumber(validPhone))
-                }
-            }
+    func rangeBeacons(){
+        for region in beaconRegions{
+            print("Loading \(region) into locationManager for ranging")
+            locationManager.startRangingBeacons(in: region)
         }
     }
     
-    func monitorBeacons(){
+    func initializeLocationManager(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
         locationManager.allowsBackgroundLocationUpdates = true
-        guard let validUUIDString = beaconUUID else{
-            beaconViewController = BeaconViewController()
-            beaconViewController.view!.bounds = self.view!.bounds
-            self.present(beaconViewController, animated: true, completion: nil)
-            return
-        }
-        guard let validUUID = UUID(uuidString: validUUIDString) else{
-            self.present(BeaconViewController(), animated: true, completion: nil)
-            return
-        }
-        beaconRegion = CLBeaconRegion(
-            proximityUUID: validUUID,
-            identifier: BRAND_IDENTIFIER
-        )
-        
-        // locationManager.requestAlwaysAuthorization()
-        //let uuid = UUID(uuidString: beaconUUID)!
-        beaconRegion = CLBeaconRegion(proximityUUID: UUID(uuidString: beaconUUID)!, major: 10002, minor: 34452, identifier: BRAND_IDENTIFIER)
-        beaconRegion.notifyOnEntry = true
-        beaconRegion.notifyOnExit = true
-        beaconRegion.notifyEntryStateOnDisplay = true
-        print("Loading \(beaconRegion!) into locationManager for monitoring and ranging")
-        locationManager.startMonitoring(for: beaconRegion)
-        locationManager.startRangingBeacons(in: beaconRegion)
-        print("Monitored regions: \(locationManager.monitoredRegions)")
-        print("Ranged regions: \(locationManager.rangedRegions)")
+
     }
     
     func reloadExtension(){
-        validateExtension()
-        callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
-            print("Reloading extension.")
-            if let validError = error {
-                print("Error loading extension: \(validError)")
-            }
-        })
+        if extensionIsValid(){
+            callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
+                print("Reloading extension.")
+                if let validError = error {
+                    print("Error loading extension: \(validError)")
+                }
+            })
+        }
     }
     
-    func validateExtension(){
+    func extensionIsValid() -> Bool {
+        var extensionIsValid: Bool = false
         callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.PureFocus.CallManager") { (cXCallDirectoryManagerEnabledStatus) in
             switch cXCallDirectoryManagerEnabledStatus.0{
             case .disabled:
@@ -277,26 +225,17 @@ class MainViewController: UIViewController{
                 print("App extension disabled, pop instructions on enabling.")
             case .unknown:
                 print("Unknown state of extension")
-                return
             case .enabled:
                 print("Extension is enabled.")
+                extensionIsValid = true
             }
             if let validError = cXCallDirectoryManagerEnabledStatus.1{
-                print("Error: \(validError)")
+                print("Error validating extension: \(validError)")
             }
         }
+        return extensionIsValid
     }
     func call911(){
-        
-        // BRILLIANT IDEA COMBINATION OF INTERNAL METHOD AND NON-INTERNAL FOR FASTER RESPONSE TIME
-        
-        if UIAccessibilityIsGuidedAccessEnabled(){
-            print("Disabling SingleApp mode")
-            UIAccessibilityRequestGuidedAccessSession(false){
-                success in
-                print("Request SingleApp mode turn off success: \(success)")
-            }
-        }
         if let url = URL(string: "tel://\(emergencyCall)"), UIApplication.shared.canOpenURL(url) {
             if #available(iOS 10, *) {
                 UIApplication.shared.open(url)
@@ -309,12 +248,7 @@ class MainViewController: UIViewController{
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("Segueing")
         let beaconViewController = segue.destination as! BeaconViewController
-        
-        guard let validUUID = beaconUUID else{
-            return
-        }
-        beaconViewController.beaconUUID = validUUID
-        
+        beaconViewController.bluetoothDevices = bluetoothDevices
     }
 }
 
@@ -351,18 +285,9 @@ extension MainViewController: CLLocationManagerDelegate {
                     alamo.singleAppModeLock(enable: false)
                     isLocked = false
                     if self.isBlocking == true{
-                        // defaults.set(false, forKey: "beaconInRange")
                         self.isBlocking = false
-                        // reloadExtension()
                         if UIAccessibilityIsGuidedAccessEnabled(){
                             print("Disabling SingleApp mode")
-                            /*
-                             UIAccessibilityRequestGuidedAccessSession(false){
-                             success in
-                             print("Request SingleApp mode turn off success: \(success)")
-                             }*/
-                            // Removed autonomous entry into single app mode in favor of API calls
-                            alamo.singleAppModeLock(enable: false)
                         }
                     }
                     
@@ -377,7 +302,6 @@ extension MainViewController: CLLocationManagerDelegate {
                     if self.isBlocking == false{
                         // defaults.set(true, forKey: "beaconInRange")
                         self.isBlocking = true
-                        // reloadExtension()
                         /*
                          if !UIAccessibilityIsGuidedAccessEnabled(){
                          print("Enabling single app mode success.")
@@ -397,14 +321,11 @@ extension MainViewController: CLLocationManagerDelegate {
                     lastFiveReadings.remove(at: 0)
                 }
                 lastFiveReadings.append(beaconAccuracy)
-                
-                if staringRssi == nil {
-                    staringRssi = beaconRssi
-                }
-                clBeacon = beacons.first
+
             } else {
-                self.inRangeTextField.text = beaconUUID
-                clBeacon = nil
+                if bluetoothDevices.count > 0{
+                    self.inRangeTextField.text = bluetoothDevices.last!.uuID.uuidString
+                }
             }
         }
         func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {

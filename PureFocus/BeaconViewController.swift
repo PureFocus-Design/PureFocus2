@@ -22,16 +22,29 @@ class BeaconViewController: UIViewController {
     
     @IBOutlet weak var beaconList: UIPickerView!
     
+    /*
     var beaconUUID: String!{
         didSet{
             print("beaconUUID: \(beaconUUID!)")
         }
+    }*/
+    
+    var bluetoothDevices: [BluetoothDevice] = []
+    
+    var syncedDevices: [BluetoothDevice] {
+        var syncedDevices: [BluetoothDevice] = []
+        for device in bluetoothDevices{
+            if device.bluetoothState == .synced{
+                syncedDevices.append(device)
+            }
+        }
+        return syncedDevices
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let validUUID = beaconUUID {
-             uuID.placeholder = validUUID
+        if let validUUID = syncedDevices.last {
+             uuID.placeholder = validUUID.uuID.uuidString
         }else{
             uuID?.placeholder = "Tap to enter manually"
         }
@@ -41,7 +54,6 @@ class BeaconViewController: UIViewController {
         statusTextfield?.delegate = self
         beaconList?.delegate = self
         beaconList?.dataSource = self
-        uuID.placeholder = beaconUUID
         uuID.delegate = self
         uuID.font = uuID.font!.withSize(UIFont.smallSystemFontSize)
         statusTextfield.textAlignment = .center
@@ -51,22 +63,25 @@ class BeaconViewController: UIViewController {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.dismiss(animated: true) {
-            print("Seguing back")
-        }
-        /*
+        
+        // MARK ADD CODE:  ADD CODE TO REMOVE PROFILE IF LOCKED IN SINGLE APP MODE
+        
         if UIAccessibilityIsGuidedAccessEnabled(){
             print("Disabling SingleApp mode")
             UIAccessibilityRequestGuidedAccessSession(false){
                 success in
                 print("Request SingleApp mode turn off success: \(success)")
             }
-        }*/
+        }
+        self.dismiss(animated: true) {
+            print("Seguing back")
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let mainVC = segue.destination as! MainViewController
-        mainVC.beaconUUID = self.beaconUUID
+        mainVC.bluetoothDevices = self.bluetoothDevices
+        // mainVC.beaconUUID = self.beaconUUID
     }
 
 }
@@ -99,8 +114,9 @@ extension BeaconViewController: UITextFieldDelegate{
         // called when 'return' key pressed. return NO to ignore.
         // validate data before returning
         if textField.accessibilityIdentifier == "UUID"{
-            beaconUUID = textField.text!
-            print("Inside UUID")
+            if let syncedDevice = syncedDevices.last{
+                textField.text! = syncedDevice.uuID.uuidString
+            }
         }
         textField.resignFirstResponder()
         return true
@@ -187,8 +203,7 @@ extension BeaconViewController: CBCentralManagerDelegate{
             if advertisedName.contains("ion"){
                 print("Found ion beacon")
                 print("peripheral \(peripheral)")
-                beaconUUID = peripheral.identifier.uuidString
-                uuID.text = beaconUUID
+                bluetoothDevices.append(BluetoothDevice.init(uuID: peripheral.identifier.uuidString))
                 print("advertisementData \(advertisementData)")
                 print("RSSI \(RSSI)")
             }
