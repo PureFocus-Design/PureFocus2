@@ -7,12 +7,10 @@
 //
 
 import UIKit
-import CallKit
 import CoreLocation
 import Foundation
-import AddressBook
-import Contacts
 import Alamofire
+import CoreBluetooth
 
 
 class MainViewController: UIViewController{
@@ -24,29 +22,24 @@ class MainViewController: UIViewController{
     
     // PROPERTIES
     
-    // Networking
+    // Networking and emergency calling
     
     let alamo = AlamoNetwork()
-    
-    // Whitelisting
-    
-    var callDirManager = CXCallDirectoryManager.sharedInstance
     var emergencyCall: String = "7274531901"  // change to 911 before release
-    let defaults = UserDefaults(suiteName: "group.purefocus")!
     
-    // Tracking Beacons
-    // might remove isBlocking/isLocked for AppState
-    // currently, isBlocking indicates that the beacon is in range, isLocked indicates single app mode
+    // Tracking Beacons (might remove isBlocking/isLocked and replace with AppState)
+    // Currently, isBlocking indicates that the beacon is in range, isLocked indicates single app mode
     
     var isBlocking = false
     var isLocked: Bool = false
     
     var locationManager: CLLocationManager!
     let BRAND_IDENTIFIER = "com.purefocus"
+    var cbPeripherals: [CBPeripheral] = []
     var beaconRegions: [CLBeaconRegion]{
         var beaconRegions: [CLBeaconRegion] = []
-        for beacon in bluetoothDevices{
-            let beaconRegion = CLBeaconRegion.init(proximityUUID: beacon.uuID, identifier: BRAND_IDENTIFIER)
+        for beacon in cbPeripherals{
+            let beaconRegion = CLBeaconRegion.init(proximityUUID: beacon.identifier, identifier: beacon.name ?? BRAND_IDENTIFIER)
             beaconRegion.notifyOnEntry = true
             beaconRegion.notifyOnExit = true
             beaconRegion.notifyEntryStateOnDisplay = true
@@ -60,7 +53,7 @@ class MainViewController: UIViewController{
     
     var beaconViewController: BeaconViewController!
     var locationTrackingAuthorized: Bool = false
-    var bluetoothDevices: [BluetoothDevice] = []
+
     
     @IBOutlet weak var callBlockStatusSwitch: UISwitch!
     
@@ -137,9 +130,9 @@ class MainViewController: UIViewController{
         SettingsVCButton.layer.borderWidth = 1
         iconView.layer.cornerRadius = 9
         iconView.layer.borderWidth = 1
-        if let validBeacon = bluetoothDevices.last {
+        if let validBeacon = cbPeripherals.last {
             inRangeTextField.textAlignment = .left
-            inRangeTextField.placeholder = validBeacon.uuID.uuidString
+            inRangeTextField.placeholder = validBeacon.identifier.uuidString
         }else{
             inRangeTextField.textAlignment = .center
             inRangeTextField.placeholder = "Tap + button to add beacon"
@@ -150,12 +143,13 @@ class MainViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        if locationTrackingAuthorized{
-            initializeLocationManager()
-            rangeBeacons()
-        }else{
+        if !locationTrackingAuthorized{
             print("Seguing to auth page")
+            initializeLocationManager()
+        }else{
+            rangeBeacons()
         }
+        print("MainVC: cbPeripherals: \(cbPeripherals)")
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -169,24 +163,6 @@ class MainViewController: UIViewController{
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    func getDigits(phone :String)->Int?{
-        var digits = phone.components(separatedBy: "digits=").last!
-        digits = digits.components(separatedBy: ">").first!
-        if digits.contains("+"){
-            digits.characters.removeFirst(1)
-        }
-        if digits.contains(";"){
-            digits.characters.removeLast(5)
-        }
-        if digits.characters.count == 10{
-            digits.characters.insert("1", at: digits.characters.startIndex)
-        }
-        if digits.characters.count < 10{
-            return nil
-        }
-        return Int(digits)
     }
     
     func rangeBeacons(){
@@ -205,36 +181,6 @@ class MainViewController: UIViewController{
 
     }
     
-    func reloadExtension(){
-        if extensionIsValid(){
-            callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
-                print("Reloading extension.")
-                if let validError = error {
-                    print("Error loading extension: \(validError)")
-                }
-            })
-        }
-    }
-    
-    func extensionIsValid() -> Bool {
-        var extensionIsValid: Bool = false
-        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.PureFocus.CallManager") { (cXCallDirectoryManagerEnabledStatus) in
-            switch cXCallDirectoryManagerEnabledStatus.0{
-            case .disabled:
-                // add code: present instructions modally
-                print("App extension disabled, pop instructions on enabling.")
-            case .unknown:
-                print("Unknown state of extension")
-            case .enabled:
-                print("Extension is enabled.")
-                extensionIsValid = true
-            }
-            if let validError = cXCallDirectoryManagerEnabledStatus.1{
-                print("Error validating extension: \(validError)")
-            }
-        }
-        return extensionIsValid
-    }
     func call911(){
         if let url = URL(string: "tel://\(emergencyCall)"), UIApplication.shared.canOpenURL(url) {
             if #available(iOS 10, *) {
@@ -248,7 +194,7 @@ class MainViewController: UIViewController{
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("Segueing")
         let beaconViewController = segue.destination as! BeaconViewController
-        beaconViewController.bluetoothDevices = bluetoothDevices
+        beaconViewController.cbPeripherals = cbPeripherals
     }
 }
 
@@ -323,8 +269,8 @@ extension MainViewController: CLLocationManagerDelegate {
                 lastFiveReadings.append(beaconAccuracy)
 
             } else {
-                if bluetoothDevices.count > 0{
-                    self.inRangeTextField.text = bluetoothDevices.last!.uuID.uuidString
+                if cbPeripherals.count > 0{
+                    self.inRangeTextField.text = cbPeripherals.last!.identifier.uuidString
                 }
             }
         }
@@ -383,6 +329,11 @@ extension UIViewController{
 extension CLProximity: CustomStringConvertible{
     public var description: String{
         return String(self.rawValue)
+    }
+}
+extension BeaconViewController: MyProtocol{
+    func sendData(cbPeripherals: [CBPeripheral]) {
+        self.cbPeripherals = cbPeripherals
     }
 }
 

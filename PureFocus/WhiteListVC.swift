@@ -8,13 +8,66 @@
 
 import Foundation
 import UIKit
+import CallKit
+import Contacts
 
-class WhiteListVC: UIViewcotroller{
+class WhiteListVC: UIViewController{
     
     // MARK NEW CODE:  SEND WHITELIST TO EXTENSION, CALLS BREAK SINGLE APP MODE
     
     var whitelist: [String:CXCallDirectoryPhoneNumber] = [:]
     var contactlist: [String:CXCallDirectoryPhoneNumber] = [:]
+    var callDirManager = CXCallDirectoryManager.sharedInstance
+    let defaults = UserDefaults(suiteName: "group.purefocus")!
+    
+    func reloadExtension(){
+        if extensionIsValid(){
+            callDirManager.reloadExtension(withIdentifier: "com.dimez.PureFocus.CallManager", completionHandler: { (error) in
+                print("Reloading extension.")
+                if let validError = error {
+                    print("Error loading extension: \(validError)")
+                }
+            })
+        }
+    }
+    
+    func extensionIsValid() -> Bool {
+        var extensionIsValid: Bool = false
+        callDirManager.getEnabledStatusForExtension(withIdentifier: "com.dimez.PureFocus.CallManager") { (cXCallDirectoryManagerEnabledStatus) in
+            switch cXCallDirectoryManagerEnabledStatus.0{
+            case .disabled:
+                // add code: present instructions modally
+                print("App extension disabled, pop instructions on enabling.")
+            case .unknown:
+                print("Unknown state of extension")
+            case .enabled:
+                print("Extension is enabled.")
+                extensionIsValid = true
+            }
+            if let validError = cXCallDirectoryManagerEnabledStatus.1{
+                print("Error validating extension: \(validError)")
+            }
+        }
+        return extensionIsValid
+    }
+    
+    func getDigits(phone :String)->Int?{
+        var digits = phone.components(separatedBy: "digits=").last!
+        digits = digits.components(separatedBy: ">").first!
+        if digits.contains("+"){
+            digits.characters.removeFirst(1)
+        }
+        if digits.contains(";"){
+            digits.characters.removeLast(5)
+        }
+        if digits.characters.count == 10{
+            digits.characters.insert("1", at: digits.characters.startIndex)
+        }
+        if digits.characters.count < 10{
+            return nil
+        }
+        return Int(digits)
+    }
     
     func loadContacts(){
         let contactStore = CNContactStore()

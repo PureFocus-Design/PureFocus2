@@ -8,10 +8,16 @@
 
 import Foundation
 import os.log
+import CoreBluetooth
 
-class BluetoothDevice:  NSObject{
+// Wrote this class before trying to connect to bluetooth devices
+// CBPeripheral is identical
+
+class BluetoothDevice: NSObject{
     
-    // test passes or fails
+    let uuID: UUID
+    var name: String = "unknown"
+    var bluetoothState: BluetoothState
     
     enum BluetoothState: String{
         case rangeable     // State starts out as rangeable
@@ -20,12 +26,12 @@ class BluetoothDevice:  NSObject{
         case synced        // app has tested connection and will connect
     }
     
-    var uuID: UUID
-    var bluetoothState: BluetoothState
-    
     init(uuID: String) {
         self.uuID = UUID.init(uuidString: uuID)!
         self.bluetoothState = .rangeable
+    }
+    override var description: String{
+        return ("name: \(self.name), UUID: \(uuID.uuidString)")
     }
     
 }

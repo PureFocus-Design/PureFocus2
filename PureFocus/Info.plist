@@ -26,10 +26,19 @@
 	<string>Main</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>App tracks your proximity to beacon</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>We connect to bluetoot devices</string>
 	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App tracks your proximity to beacon</string>
+	<key>NSLocationUsageDescription</key>
 	<string>App tracks your proximity to beacon</string>
 	<key>NSContactsUsageDescription</key>
 	<string>App can whitelist your contacts</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string></string>
+		<string>location</string>
+	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

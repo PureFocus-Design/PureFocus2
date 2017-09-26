@@ -11,10 +11,23 @@ import UIKit
 import CoreLocation
 import CoreBluetooth
 
+protocol MyProtocol: class {
+    func sendData(cbPeripherals: [CBPeripheral])
+}
+
 class BeaconViewController: UIViewController {
     
     var cbCentralManager: CBCentralManager!
     var locationManager: CLLocationManager!
+    var duplicateDeviceCount: Int = 0
+    var delegate: MyProtocol?
+    
+    // Checks for bluetooth devices that can connect
+    internal var possiblePeripherals: [CBPeripheral] = []
+    // connects and disconnects to test
+    var cbPeripherals: [CBPeripheral] = []
+    // user activates from the tested devices
+    var syncedDevices: [CBPeripheral] = []
     
     @IBOutlet weak var uuID: UITextField!
     
@@ -22,29 +35,19 @@ class BeaconViewController: UIViewController {
     
     @IBOutlet weak var beaconList: UIPickerView!
     
-    /*
-    var beaconUUID: String!{
-        didSet{
-            print("beaconUUID: \(beaconUUID!)")
-        }
-    }*/
+    @IBOutlet weak var syncedDevicesTableView: UITableView!
     
-    var bluetoothDevices: [BluetoothDevice] = []
-    
-    var syncedDevices: [BluetoothDevice] {
-        var syncedDevices: [BluetoothDevice] = []
-        for device in bluetoothDevices{
-            if device.bluetoothState == .synced{
-                syncedDevices.append(device)
-            }
-        }
-        return syncedDevices
+    @IBAction func addDeviceButtonHit(_ sender: Any) {
+        
+        print("Adding devices")
+        
     }
     
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if let validUUID = syncedDevices.last {
-             uuID.placeholder = validUUID.uuID.uuidString
+             uuID.placeholder = validUUID.identifier.uuidString
         }else{
             uuID?.placeholder = "Tap to enter manually"
         }
@@ -60,6 +63,7 @@ class BeaconViewController: UIViewController {
         uuID.textAlignment = .center
         cbCentralManager = CBCentralManager()
         cbCentralManager.delegate = self
+        delegate = self
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -79,9 +83,10 @@ class BeaconViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("Segue called")
         let mainVC = segue.destination as! MainViewController
-        mainVC.bluetoothDevices = self.bluetoothDevices
-        // mainVC.beaconUUID = self.beaconUUID
+        print("MainVC: \(cbPeripherals)")
+        mainVC.cbPeripherals = self.cbPeripherals
     }
 
 }
@@ -115,7 +120,7 @@ extension BeaconViewController: UITextFieldDelegate{
         // validate data before returning
         if textField.accessibilityIdentifier == "UUID"{
             if let syncedDevice = syncedDevices.last{
-                textField.text! = syncedDevice.uuID.uuidString
+                textField.text! = syncedDevice.identifier.uuidString
             }
         }
         textField.resignFirstResponder()
@@ -170,7 +175,7 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
-        return 1
+        return 3
     }
 }
 extension BeaconViewController: CLLocationManagerDelegate{
@@ -198,16 +203,130 @@ extension BeaconViewController: CBCentralManagerDelegate{
             print("centralManager unsupported")
         }
     }
+    
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if let advertisedName = advertisementData["kCBAdvDataLocalName"] as? String{
-            if advertisedName.contains("ion"){
-                print("Found ion beacon")
-                print("peripheral \(peripheral)")
-                bluetoothDevices.append(BluetoothDevice.init(uuID: peripheral.identifier.uuidString))
-                print("advertisementData \(advertisementData)")
-                print("RSSI \(RSSI)")
+        // MARK ADD CODE:  Consider a rescanning button
+        print("CB: Duplicate device count: \(duplicateDeviceCount)")
+        if duplicateDeviceCount > 10 {  // exits after 3 duplicate names are found
+            print("Stopping scan")
+            self.cbCentralManager.stopScan()
+            print("Is anyone scanning?: \(cbCentralManager.isScanning)")
+            print("CB: possiblePeripherals: \(possiblePeripherals)")
+            print("CB: Synced devices: \(syncedDevices)")
+            print("CB: cbPeripherals: \(cbPeripherals)")
+            for cbPeripheral in cbPeripherals{
+                if cbPeripheral.state == .connected{
+                    // cbPeripherals is for testing connections, should not be connected
+                    central.cancelPeripheralConnection(peripheral)
+                }
             }
-            cbCentralManager.stopScan()
+            return
+        }
+        print("DISCOVERED DEVICE: ")
+        print("uuid \(peripheral.identifier)")
+        // let bluetoothDevice = BluetoothDevice(uuID: peripheral.identifier.uuidString)
+        print("state: \(peripheral.state)")
+        print("advertisement Data: \(advertisementData)")
+        var isDuplicate = false
+        if let connectable = advertisementData["kCBAdvDataIsConnectable"] as? Bool{
+            print("connectable: \(connectable)")
+            if connectable{
+                print("Attempting connection.")
+                for possiblePeripheral in possiblePeripherals{
+                    if peripheral.name == possiblePeripheral.name{
+                        isDuplicate = true
+                    }
+                }
+                if isDuplicate{
+                    duplicateDeviceCount += 1
+                }else{
+                    self.possiblePeripherals.append(peripheral)
+                }
+                print("CB: possiblePeripherals: \(possiblePeripherals)")
+                central.connect(peripheral, options: nil)
+            }
+        }
+        if let advertisedName = advertisementData["kCBAdvDataLocalName"] as? String{
+            print("advertisedName: \(advertisedName)")
+            print("Checking uniqueness...")
+            for device in cbPeripherals{
+                if advertisedName == device.name{
+                    // checks for uniqueness
+                    duplicateDeviceCount += 1
+                    print("duplicate found, total: \(duplicateDeviceCount)")
+                    return
+                }
+            }
+            print("DEVICE IS UNIQUE")
+
+            // let bluetoothDevice = BluetoothDevice(uuID: peripheral.identifier.uuidString)
+            // bluetoothDevice.name = advertisedName
+            // must have name, that's how we check uniqueness
+        }
+        
+    }
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("didConnect to: \(peripheral)")
+        peripheral.delegate = self
+        var isDuplicate = false
+        var isValid = false
+        for cbPeripheral in cbPeripherals{
+            if peripheral.name == cbPeripheral.name{
+                isDuplicate = true
+            }
+        }
+        if !isDuplicate{
+            cbPeripherals.append(peripheral)
+            print("CB: cbPeripherals: \(cbPeripherals)")
+        }
+        for syncedDevice in syncedDevices{
+            if peripheral.name == syncedDevice.name{
+                isValid = true
+            }
+        }
+        // cancel connections that we were just testing
+        if !isValid{
+            central.cancelPeripheralConnection(peripheral)
         }
     }
+    
+}
+
+extension BeaconViewController: UITableViewDelegate, UITableViewDataSource{
+    
+    // number of rows based on bluetooth devices synced to app
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        return syncedDevices.count
+    }
+    
+    
+    // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
+    // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        // MARK ADD CODE: MAKE CELL TO REFLECT BLUETOOTH DEVICE ARRAY DATA
+        let cell = UITableViewCell.init(style: UITableViewCellStyle.value1, reuseIdentifier: "syncedBeacon")
+        
+        return cell
+    }
+}
+extension CBPeripheralState: CustomStringConvertible{
+    public var description: String{
+        switch self {
+        case .connected:
+            return "connected"
+        case .connecting:
+            return "connecting"
+        case .disconnected:
+            return "disconnected"
+        case .disconnecting:
+            return "disconnecting"
+        }
+    }
+}
+extension BeaconViewController: CBPeripheralDelegate{
+    
+    // Callback methods to communicate with bluetooth device
+    
 }
