@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7B5279FA21631C607ACAC1C7 /* Pods_PureFocus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884FD051A617D23C4D2CF3F3 /* Pods_PureFocus.framework */; };
 		86F850B472C858114DCA3676 /* Pods_PureFocusTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CA304FB2BAB9384A7DE40A4 /* Pods_PureFocusTests.framework */; };
+		C5350B461F7B5C5B006853F6 /* SyncedDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5350B451F7B5C5B006853F6 /* SyncedDeviceCell.swift */; };
 		C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616C41F47686A004DDA48 /* AppDelegate.swift */; };
 		C53616CF1F47686A004DDA48 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C53616CD1F47686A004DDA48 /* LaunchScreen.storyboard */; };
 		C53616DA1F47686A004DDA48 /* PureFocusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C53616D91F47686A004DDA48 /* PureFocusTests.swift */; };
@@ -64,6 +65,7 @@
 		3CA304FB2BAB9384A7DE40A4 /* Pods_PureFocusTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PureFocusTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F7F08ECF97C5239834F54F /* Pods-PureFocus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PureFocus.release.xcconfig"; path = "Pods/Target Support Files/Pods-PureFocus/Pods-PureFocus.release.xcconfig"; sourceTree = "<group>"; };
 		884FD051A617D23C4D2CF3F3 /* Pods_PureFocus.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PureFocus.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5350B451F7B5C5B006853F6 /* SyncedDeviceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncedDeviceCell.swift; sourceTree = "<group>"; };
 		C53616C11F47686A004DDA48 /* PureFocus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PureFocus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C53616C41F47686A004DDA48 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C53616CE1F47686A004DDA48 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				C5617A8F1F767F99001AA52B /* BluetoothDevice.swift */,
 				C5617A911F78160A001AA52B /* User.swift */,
 				C55498931F47745400103CE8 /* BeaconViewController.swift */,
+				C5350B451F7B5C5B006853F6 /* SyncedDeviceCell.swift */,
 				C53616E81F476960004DDA48 /* Assets.xcassets */,
 				C53616E41F47691E004DDA48 /* Main.storyboard */,
 				C53616CD1F47686A004DDA48 /* LaunchScreen.storyboard */,
@@ -444,6 +447,7 @@
 				C5617A8E1F75D27F001AA52B /* Alamo.swift in Sources */,
 				C5617A901F767F99001AA52B /* BluetoothDevice.swift in Sources */,
 				C5617A941F798733001AA52B /* AppState.swift in Sources */,
+				C5350B461F7B5C5B006853F6 /* SyncedDeviceCell.swift in Sources */,
 				C5617A921F78160A001AA52B /* User.swift in Sources */,
 				C53616C51F47686A004DDA48 /* AppDelegate.swift in Sources */,
 				C55498941F47745400103CE8 /* BeaconViewController.swift in Sources */,

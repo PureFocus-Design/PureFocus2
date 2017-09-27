@@ -11,16 +11,22 @@ import UIKit
 import CoreLocation
 import CoreBluetooth
 
-protocol SendDataProtocol: class {
-    func sendData(syncedDevices: [CBPeripheral])
+// let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+protocol SendDataToMainVCProtocol{
+    func sendData(syncedDevices: [CBPeripheral], sendingVC: BeaconViewController)
 }
 
-class BeaconViewController: UIViewController {
+class BeaconViewController: UIViewController{
     
     var cbCentralManager: CBCentralManager!
     var locationManager: CLLocationManager!
+    var sendDataToMainVCDelegate: SendDataToMainVCProtocol!{
+        willSet{
+            print("BeaconVC.sendDataToMainVCDelegate: \(newValue)")
+        }
+    }
     var duplicateDeviceCount: Int = 0
-    weak var delegate: SendDataProtocol?
     
     // Checks for bluetooth devices that can connect
     internal var possiblePeripherals: [CBPeripheral] = []
@@ -28,45 +34,57 @@ class BeaconViewController: UIViewController {
     var cbPeripherals: [CBPeripheral] = []{
         didSet{
             beaconList.reloadAllComponents()
+            if cbPeripherals.count == 1{
+                uuID.text = cbPeripherals.last!.identifier.uuidString
+            }
         }
     }
     // user activates from the tested devices
-    var syncedDevices: [CBPeripheral] = []
+    var syncedDevices: [CBPeripheral] = []{
+        didSet{
+            if syncedDevicesTableView != nil{
+                syncedDevicesTableView.reloadData()
+            }
+        }
+        willSet{
+            print("syncedDevices newValue \(newValue)")
+        }
+    }
     
     @IBOutlet weak var uuID: UITextField!
-    
-    @IBOutlet weak var statusTextfield: UITextField!
     
     @IBOutlet weak var beaconList: UIPickerView!
     
     @IBOutlet weak var syncedDevicesTableView: UITableView!
     
+    
+    
+    @IBOutlet weak var addDeviceButton: UIButton!
+
+    
     @IBAction func addDeviceButtonHit(_ sender: Any) {
         
-        print("Adding devices")
-        
+        print("Adding device")
+        let myIndex = beaconList.selectedRow(inComponent: 0)
+        syncedDevices.append(cbPeripherals[myIndex])
     }
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let validUUID = syncedDevices.last {
-             uuID.placeholder = validUUID.identifier.uuidString
-        }else{
-            uuID?.placeholder = "Tap to enter manually"
-        }
         uuID?.delegate = self
-        uuID?.font = uuID.font!.withSize(UIFont.buttonFontSize)
-        statusTextfield?.textAlignment = .center
-        statusTextfield?.delegate = self
-        beaconList?.delegate = self
-        beaconList?.dataSource = self
+        uuID?.font = uuID.font!.withSize(UIFont.systemFontSize)
+        addDeviceButton.layer.cornerRadius = 9
+        addDeviceButton.layer.borderWidth = 1
+        beaconList.delegate = self
+        beaconList.dataSource = self
         uuID.delegate = self
-        statusTextfield.textAlignment = .center
         uuID.textAlignment = .center
         cbCentralManager = CBCentralManager()
         cbCentralManager.delegate = self
-        delegate = self
+        syncedDevicesTableView.delegate = self
+        syncedDevicesTableView.dataSource = self
+        print("Synced devices: \(syncedDevices)")
+        sendDataToMainVCDelegate = self
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -80,10 +98,15 @@ class BeaconViewController: UIViewController {
                 print("Request SingleApp mode turn off success: \(success)")
             }
         }
-        delegate?.sendData(syncedDevices: syncedDevices)
+        // delegate?.sendData(syncedDevices: syncedDevices)
+        sendDataToMainVCDelegate.sendData(syncedDevices: self.syncedDevices, sendingVC: self)
         self.dismiss(animated: true) {
             print("Seguing back")
         }
+    }
+    override func unwind(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
+        super.unwind(for: unwindSegue, towardsViewController: subsequentVC)
+        print("Unwinding")
     }
     /*
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -138,7 +161,7 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat{
         print("widthForComponent: \(component)")
-        return CGFloat.init(200)
+        return CGFloat.init(250)
     }
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat{
@@ -170,13 +193,14 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     }
  */
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int){
-        print("didSelectRow: \(row)")
+        if cbPeripherals.count > 0{
+            self.uuID.text = cbPeripherals[row].identifier.uuidString
+        }
     }
     
     // DATA SOURCE METHODS
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int{
-        print("numberOfComponents \(pickerView)")
         return 1
     }
     
@@ -215,7 +239,7 @@ extension BeaconViewController: CBCentralManagerDelegate{
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         // MARK ADD CODE:  Consider a rescanning button
         print("CB: Duplicate device count: \(duplicateDeviceCount)")
-        if duplicateDeviceCount > 10 {  // exits after 3 duplicate names are found
+        if duplicateDeviceCount > 10 {  // exits after 10 duplicate names are found
             print("Stopping scan")
             self.cbCentralManager.stopScan()
             print("Is anyone scanning?: \(cbCentralManager.isScanning)")
@@ -266,10 +290,6 @@ extension BeaconViewController: CBCentralManagerDelegate{
                 }
             }
             print("DEVICE IS UNIQUE")
-
-            // let bluetoothDevice = BluetoothDevice(uuID: peripheral.identifier.uuidString)
-            // bluetoothDevice.name = advertisedName
-            // must have name, that's how we check uniqueness
         }
         
     }
@@ -302,6 +322,8 @@ extension BeaconViewController: CBCentralManagerDelegate{
 
 extension BeaconViewController: UITableViewDelegate, UITableViewDataSource{
     
+    
+    
     // number of rows based on bluetooth devices synced to app
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
@@ -312,12 +334,25 @@ extension BeaconViewController: UITableViewDelegate, UITableViewDataSource{
     // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
     // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
     
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         // MARK ADD CODE: MAKE CELL TO REFLECT BLUETOOTH DEVICE ARRAY DATA
-        let cell = UITableViewCell.init(style: UITableViewCellStyle.value1, reuseIdentifier: "syncedBeacon")
-        
-        return cell
+        if let syncedDeviceCell = tableView.dequeueReusableCell(withIdentifier: "syncedDeviceCell") as? SyncedDeviceCell{
+            syncedDeviceCell.deviceName.text = syncedDevices[indexPath.row].name
+            return syncedDeviceCell
+        }
+        return SyncedDeviceCell()
     }
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            syncedDevices.remove(at: indexPath.row)
+            tableView.reloadData()
+        }
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
 }
 extension CBPeripheralState: CustomStringConvertible{
     public var description: String{
@@ -338,3 +373,6 @@ extension BeaconViewController: CBPeripheralDelegate{
     // Callback methods to communicate with bluetooth device
     
 }
+
+
+

@@ -32,10 +32,19 @@ class MainViewController: UIViewController{
     
     var isBlocking = false
     var isLocked: Bool = false
+    var sendDataToMainVCDelegate: SendDataToMainVCProtocol!{
+        willSet{
+            print("MainVC.sendDataToMainVCDelegate: \(newValue)")
+        }
+    }
     
     var locationManager: CLLocationManager!
     let BRAND_IDENTIFIER = "com.purefocus"
-    var syncedDevices: [CBPeripheral] = []
+    var syncedDevices: [CBPeripheral] = []{
+        willSet{
+            print("MainVC: syncedDevices newValue \(newValue)")
+        }
+    }
     var beaconRegions: [CLBeaconRegion]{
         var beaconRegions: [CLBeaconRegion] = []
         for beacon in syncedDevices{
@@ -113,8 +122,6 @@ class MainViewController: UIViewController{
         }
     }
     
-    // MARK ADD CODE: NSCoding, persist data instead of hard code UUID
-    
     func setupView(){
         beaconButton.backgroundColor = UIColor.init(rgb: 0x228B22)
         beaconButton.setTitle("+", for: .normal)
@@ -137,7 +144,7 @@ class MainViewController: UIViewController{
             inRangeTextField.textAlignment = .center
             inRangeTextField.placeholder = "Tap + button to add beacon"
         }
-        inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.smallSystemFontSize)
+        inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
     }
     
     override func viewDidLoad() {
@@ -149,15 +156,15 @@ class MainViewController: UIViewController{
         }else{
             rangeBeacons()
         }
-        print("syncedDevices: \(syncedDevices)")
+        sendDataToMainVCDelegate = self
     }
     override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
         if isLandscape{
             logoImage.isHidden = true
         }else{
             logoImage.isHidden = false
         }
+        super.viewWillLayoutSubviews()
     }
     
     override func didReceiveMemoryWarning() {
@@ -194,9 +201,11 @@ class MainViewController: UIViewController{
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("Segueing")
         let beaconViewController = segue.destination as! BeaconViewController
+        // self.sendDataToMainVCDelegate = beaconViewController
         beaconViewController.syncedDevices = syncedDevices
     }
 }
+
 
 
 
@@ -334,10 +343,24 @@ extension CLProximity: CustomStringConvertible{
         return String(self.rawValue)
     }
 }
-extension BeaconViewController: SendDataProtocol{
-    func sendData(syncedDevices cbPeripherals: [CBPeripheral]) {
-        self.cbPeripherals = cbPeripherals
+
+extension MainViewController: SendDataToMainVCProtocol{
+    
+    func sendData(syncedDevices: [CBPeripheral], sendingVC: BeaconViewController){
+        print("Sending data back to main vc: \(syncedDevices)")
+        self.syncedDevices = syncedDevices
+        print("Populater mainVC's syncedDevices \(self.syncedDevices)")
     }
 }
+extension BeaconViewController: SendDataToMainVCProtocol{
+    
+    func sendData(syncedDevices: [CBPeripheral], sendingVC: BeaconViewController){
+        print("Sending data back to main vc: \(syncedDevices)")
+        print("Beacon version, i think should not happen")
+        self.syncedDevices = syncedDevices
+    }
+}
+
+
 
 
