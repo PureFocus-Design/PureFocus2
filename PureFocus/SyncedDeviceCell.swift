@@ -13,10 +13,10 @@ class SyncedDeviceCell: UITableViewCell{
     
     @IBOutlet weak var deviceName: UILabel!
     
-    /*  Troubleshooting stub
     override func awakeFromNib() {
         super.awakeFromNib()
-        print("SyncedDeviceCell initialized")
-    }*/
+        self.backgroundColor = UIColor.init(red: 255, green: 255, blue: 204)
+        // print("SyncedDeviceCell initialized")
+    }
     
 }

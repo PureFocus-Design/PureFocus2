@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CoreLocation
+// import CoreLocation
 import Foundation
 import Alamofire
 import CoreBluetooth
@@ -32,19 +32,66 @@ class MainViewController: UIViewController{
     
     var isBlocking = false
     var isLocked: Bool = false
-    var sendDataToMainVCDelegate: SendDataToMainVCProtocol!{
-        willSet{
-            print("MainVC.sendDataToMainVCDelegate: \(newValue)")
-        }
-    }
     
-    var locationManager: CLLocationManager!
+    // Could probably remove CoreLocation entirely if connecting to devices works
+    
+    // var locationManager: CLLocationManager!
+    var deviceManager: CBCentralManager!
     let BRAND_IDENTIFIER = "com.purefocus"
     var syncedDevices: [CBPeripheral] = []{
         willSet{
-            print("MainVC: syncedDevices newValue \(newValue)")
+            print("MainVC syncedDevices: \(newValue)")
         }
     }
+    var deviceUUIDs: [CBUUID]{
+        var deviceUUIDs: [CBUUID] = []
+        for device in syncedDevices{
+            deviceUUIDs.append(CBUUID.init(nsuuid: device.identifier))
+        }
+        return deviceUUIDs
+    }
+    
+    /*{
+        willSet{
+            if newValue.count > 0{
+                self.inRangeTextField.text = newValue.last!.name
+                for device in newValue{
+                    if deviceManager != nil && device.state == .disconnected{
+                        // deviceManager asks to connect to synced device as soon as it's set from beaconVC
+                        // connection wakes the app, API call to lock
+                        // API call to unlock
+                        // Measure RSSI avergae
+                        // lock inApp for faster response time
+                        deviceManager.connect(device, options: nil)
+                    }
+                }
+            }
+        }
+    }*/
+    /*{
+        willSet{
+            print("MainVC: syncedDevices newValue \(newValue)")
+            if let validName = newValue.last?.name{
+                self.inRangeTextField.text = validName
+            }
+            if newValue.count == 0{
+                // stops when there's nothing to search for
+                deviceManager.stopScan()
+            }
+        }
+        didSet{
+            if oldValue.count == 0{
+                var services: [CBUUID] = []
+                // could optimize for only 1
+                for device in syncedDevices{
+                    services.append(CBUUID(nsuuid: UUID.init(uuidString: device.identifier.uuidString)!))
+                }
+                deviceManager.scanForPeripherals(withServices: services, options: nil)
+                print("scanning started")
+            }
+        }
+    }*/
+    /* replaced by synced devices
     var beaconRegions: [CLBeaconRegion]{
         var beaconRegions: [CLBeaconRegion] = []
         for beacon in syncedDevices{
@@ -55,13 +102,39 @@ class MainViewController: UIViewController{
             beaconRegions.append(beaconRegion)
         }
         return beaconRegions
+    }*/
+    var lastFiveReadings: [Double] = []{
+        willSet{
+            print("NEW! Updating lastFiveReadings: \(newValue)")
+        }
     }
-    var lastFiveReadings: [Double] = []
     
     // Device setup
     
     var beaconViewController: BeaconViewController!
-    var locationTrackingAuthorized: Bool = false
+    // var locationTrackingAuthorized: Bool = false
+    var bluetoothPeripheralAuthorized: Bool!
+    
+    var isLandscape: Bool{
+        switch UIDevice.current.orientation {
+        case .landscapeLeft:
+            return true
+        case .landscapeRight:
+            return true
+        default:
+            return false
+        }
+    }
+    var readingsAverage: Double{
+
+        var total = 0.0
+        lastFiveReadings.forEach { (reading) in
+            total += reading
+        }
+        let returnValue = total/Double(lastFiveReadings.count)
+        print("NEW! readingsAverage \(returnValue)")
+        return returnValue
+    }
 
     
     @IBOutlet weak var callBlockStatusSwitch: UISwitch!
@@ -111,74 +184,72 @@ class MainViewController: UIViewController{
         }
     }
     
-    var isLandscape: Bool{
-        switch UIDevice.current.orientation {
-        case .landscapeLeft:
-            return true
-        case .landscapeRight:
-            return true
-        default:
-            return false
-        }
-    }
-    
     func setupView(){
-        beaconButton.backgroundColor = UIColor.init(rgb: 0x228B22)
-        beaconButton.setTitle("+", for: .normal)
-        beaconButton.layer.cornerRadius = 9
-        beaconButton.layer.borderWidth = 1
-        mainVCButton.layer.cornerRadius = 9
-        mainVCButton.layer.borderWidth  = 1
-        deviceVCButton.layer.cornerRadius = 9
-        deviceVCButton.layer.borderWidth = 1
-        allowVCButton.layer.cornerRadius = 9
-        allowVCButton.layer.borderWidth = 1
-        SettingsVCButton.layer.cornerRadius = 9
-        SettingsVCButton.layer.borderWidth = 1
-        iconView.layer.cornerRadius = 9
-        iconView.layer.borderWidth = 1
+        beaconButton?.backgroundColor = UIColor.init(rgb: 0x228B22)
+        beaconButton?.setTitle("+", for: .normal)
+        beaconButton?.layer.cornerRadius = 9
+        beaconButton?.layer.borderWidth = 1
+        mainVCButton?.layer.cornerRadius = 9
+        mainVCButton?.layer.borderWidth  = 1
+        deviceVCButton?.layer.cornerRadius = 9
+        deviceVCButton?.layer.borderWidth = 1
+        allowVCButton?.layer.cornerRadius = 9
+        allowVCButton?.layer.borderWidth = 1
+        SettingsVCButton?.layer.cornerRadius = 9
+        SettingsVCButton?.layer.borderWidth = 1
+        iconView?.layer.cornerRadius = 9
+        iconView?.layer.borderWidth = 1
         if let validBeacon = syncedDevices.last {
-            inRangeTextField.textAlignment = .left
-            inRangeTextField.placeholder = validBeacon.identifier.uuidString
-        }else{
             inRangeTextField.textAlignment = .center
-            inRangeTextField.placeholder = "Tap + button to add beacon"
+            inRangeTextField.text = "Searching for \(validBeacon.name ?? "unknown")"
+        }else{
+            inRangeTextField?.textAlignment = .center
+            inRangeTextField?.placeholder = "Tap + button to add beacon"
         }
-        inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
+        inRangeTextField?.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
     }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("MainVC.viewDidLoad")
         setupView()
-        if !locationTrackingAuthorized{
-            print("Seguing to auth page")
-            initializeLocationManager()
-        }else{
-            rangeBeacons()
-        }
-        sendDataToMainVCDelegate = self
+        // if allowed to connect to a peripheral in the background
+        initializeCoreBluetoothManager()
+        // else segue to auth page
+        
     }
-    override func viewWillLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         if isLandscape{
-            logoImage.isHidden = true
+            logoImage?.isHidden = true
         }else{
-            logoImage.isHidden = false
+            logoImage?.isHidden = false
         }
-        super.viewWillLayoutSubviews()
     }
+    /*
+    override func viewWillLayoutSubviews() {
+
+        super.viewWillLayoutSubviews()
+    }*/
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+    /*
     func rangeBeacons(){
         for region in beaconRegions{
             print("Loading \(region) into locationManager for ranging")
             locationManager.startRangingBeacons(in: region)
         }
-    }
+    }*/
     
+    func initializeCoreBluetoothManager(){
+        deviceManager = CBCentralManager()
+        deviceManager.delegate = self
+        // MARK ADD CODE: AUTH BLUETOOTH
+        bluetoothPeripheralAuthorized = true
+    }
+    /*
     func initializeLocationManager(){
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -186,7 +257,7 @@ class MainViewController: UIViewController{
         locationManager.requestWhenInUseAuthorization()
         locationManager.allowsBackgroundLocationUpdates = true
 
-    }
+    }*/
     
     func call911(){
         if let url = URL(string: "tel://\(emergencyCall)"), UIApplication.shared.canOpenURL(url) {
@@ -201,23 +272,11 @@ class MainViewController: UIViewController{
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("Segueing")
         let beaconViewController = segue.destination as! BeaconViewController
-        // self.sendDataToMainVCDelegate = beaconViewController
-        beaconViewController.syncedDevices = syncedDevices
+        beaconViewController.mainVC = self
     }
-}
-
-
-
-
-extension MainViewController: CLLocationManagerDelegate {
+    @IBAction func unwindToMain(segue:UIStoryboardSegue) { }
     
-    var readingsAverage: Double{
-        var total = 0.0
-        lastFiveReadings.forEach { (reading) in
-            total += reading
-        }
-        return total/Double(lastFiveReadings.count)
-    }
+    /*  MARK ADD CODE: REPLACE WITH CHECK FOR BLUETOOTH AUTH
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status{
         case .authorizedAlways:
@@ -225,11 +284,15 @@ extension MainViewController: CLLocationManagerDelegate {
         default:
             return
         }
-    }
+    }*/
     
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+   // func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+    
+    // Ranging is like discovering, when we're close enough we want to connect
+    /*
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         
-        if beacons.count > 0 && locationTrackingAuthorized {
+        if syncedDevices.count > 0 && bluetoothPeripheralAuthorized {
             
             if readingsAverage > 4.20{
                 inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
@@ -241,12 +304,12 @@ extension MainViewController: CLLocationManagerDelegate {
                     alamo.singleAppModeLock(enable: false)
                     isLocked = false
                     if self.isBlocking == true{
-                        self.isBlocking = false
                         if UIAccessibilityIsGuidedAccessEnabled(){
                             print("Disabling GuidedAccess")
                             UIAccessibilityRequestGuidedAccessSession(false){
                                 success in
                                 print("Request single app mode off success: \(success)")
+                                self.isBlocking = false
                             }
                         }
                     }
@@ -260,7 +323,8 @@ extension MainViewController: CLLocationManagerDelegate {
                         isLocked = true
                     }
                     if self.isBlocking == false{
-                        // defaults.set(true, forKey: "beaconInRange")
+                        alamo.singleAppModeLock(enable: true)
+                        // MARK ADD CODE:  ADD COMPLETION HANDLER TO ABOVE FUNCTION
                         self.isBlocking = true
                         if !UIAccessibilityIsGuidedAccessEnabled(){
                             print("Enabling GuidedAccess")
@@ -271,14 +335,13 @@ extension MainViewController: CLLocationManagerDelegate {
                          }
                     }
                 }
-                let beaconAccuracy = beacons.last!.accuracy
-                let beaconRssi = beacons.last!.rssi
+                // let beaconAccuracy = beacons.last!.accuracy
                 
                 if lastFiveReadings.count == 5{
                     // remove old reading if full
                     lastFiveReadings.remove(at: 0)
                 }
-                lastFiveReadings.append(beaconAccuracy)
+                lastFiveReadings.append(Double(RSSI))
 
             } else {
                 if syncedDevices.count > 0{
@@ -286,16 +349,7 @@ extension MainViewController: CLLocationManagerDelegate {
                 }
             }
         }
-        func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-            let beaconRegion = region as! CLBeaconRegion
-            print("Did enter region: " + (beaconRegion.major?.stringValue)!)
-        }
-        
-        func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-            let beaconRegion = region as! CLBeaconRegion
-            print("Did exit region: " + (beaconRegion.major?.stringValue)!)
-        }
-    }
+    }*/
 }
 
     
@@ -338,28 +392,154 @@ extension UIViewController{
     }
 }
 
-extension CLProximity: CustomStringConvertible{
-    public var description: String{
-        return String(self.rawValue)
+extension MainViewController: CBCentralManagerDelegate, CBPeripheralDelegate{
+    
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        
+        print("Inside delegate callback of Main.cbCentralManager.")
+        switch central.state{
+        case .poweredOn:
+            print("centralManager powered on")
+            if !central.isScanning{
+                print("deviceUUIDs: \(deviceUUIDs)")
+                central.scanForPeripherals(withServices: nil, options: nil)
+                print("Main.cbCentralManager.isScanning \(central.isScanning)")
+            }
+            /*
+            if syncedDevices.count > 0 {
+                var services: [CBUUID] = []
+                for device in syncedDevices{
+                    services.append(CBUUID(nsuuid: UUID.init(uuidString: device.identifier.uuidString)!))
+                }
+                deviceManager.scanForPeripherals(withServices: services, options: nil)
+            }*/
+        case .poweredOff:
+            print("centralManager powered off")
+        case .resetting:
+            print("centralManager resetting")
+        case .unauthorized:
+            print("centralManager unauthorized")
+        case .unknown:
+            print("centralManager unknown")
+        case .unsupported:
+            print("centralManager unsupported")
+        }
     }
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        // MARK ADD CODE:  Consider a rescanning button
+        print("Main.didDiscover device \(peripheral.name ?? "unknown"), .\(peripheral.state), \(RSSI)")
+        for device in syncedDevices{
+            print("Interested in this: \(device.name ?? "unknown"), \(device.state)")
+            if device.state == .disconnected{
+                deviceManager.connect(device, options: nil)
+            }
+            if peripheral.state == .disconnected{
+                deviceManager.connect(device, options: nil)
+            }
+        }
+        if peripheral.state == .connected{
+            print("and it's connected")
+            // print("didDiscover active device \(peripheral.name ?? "unknown"), .\(peripheral.state)")
+        }
+        
+        /*
+        for device in syncedDevices{
+            if peripheral.identifier == device.identifier{
+                print("DISCOVERED SYNCED DEVICE: ")
+                print("uuid \(peripheral.identifier)")
+                print("RSSI: \(RSSI)")
+                switch  peripheral.state {
+                case .connected:
+                    if lastFiveReadings.count == 5{
+                        // remove old reading if full
+                        lastFiveReadings.remove(at: 0)
+                    }
+                    lastFiveReadings.append(Double(RSSI))
+                    return
+                case .connecting,.disconnecting:
+                    return
+                case .disconnected:
+                    central.connect(peripheral, options: nil)
+                }
+            }
+        }*/
+    }
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("Main.didConnect to: \(peripheral)")
+        // connection wakes the app, API call to lock
+        
+        // below may be redundent
+        peripheral.delegate = self
+        var isValid = false
+        for syncedDevice in syncedDevices{
+            // checks by iterating over synced device array to verify it has a matching name
+            if peripheral.name == syncedDevice.name{
+                isValid = true
+                // locks upon connection
+                print("Locking down phone via API call")
+                lockdownPhone(auto: false)
+                // then unlock, then range beacons and enter autonomously
+            }
+        }
+        // above may be redundant, since we only ask to connect to devices in our synced device array
+        
+        // cancel connections not related to ours (might need exemption for bluetooth headphones)
+        if !isValid{
+            central.cancelPeripheralConnection(peripheral)
+        }
+    }
+    
+    func lockdownPhone(auto: Bool){
+        inRangeTextField.font = inRangeTextField.font!.withSize(UIFont.systemFontSize)
+        inRangeTextField.textAlignment = .center
+        inRangeTextField.text = "Beacon in range"
+        if !auto{
+            if !isLocked{
+                alamo.singleAppModeLock(enable: true)
+                isLocked = true
+            }
+        }else{
+            // autonomous method
+            if self.isBlocking == false{
+                // MARK ADD CODE:  ADD COMPLETION HANDLER TO ABOVE FUNCTION
+                if !UIAccessibilityIsGuidedAccessEnabled(){
+                    print("Enabling GuidedAccess")
+                    UIAccessibilityRequestGuidedAccessSession(true){
+                        success in
+                        print("Request single app mode on success: \(success)")
+                        self.isBlocking = true
+                    }
+                }
+            }
+        }
+    }
+    
+    /*
+    func centralManagerDidUpdateState(_ central: CBCentralManager){
+     
+
+    }*/
+    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]){
+        print("centralManager.willRestoreState: \(dict)")
+        // MARK TO DO: MOVE centralManager to appDelegate
+        
+        // First method invoked when your app is relaunched the background to complete Bluetooth-related task
+        
+        // Use this method to synchronize your app's state with the state of the Bluetooth system
+        
+        // dict = A dictionary containing information about central</i> that was preserved
+        
+        // CBCentralManagerRestoredStatePeripheralsKey: [CBPeripheral]
+        // CBCentralManagerRestoredStateScanServicesKey:  [UUID]
+        // CBCentralManagerRestoredStateScanOptionsKey: Dict of the scannnning options
+        
+    }
+    
+    // Callback methods to communicate with bluetooth device
+    
 }
 
-extension MainViewController: SendDataToMainVCProtocol{
-    
-    func sendData(syncedDevices: [CBPeripheral], sendingVC: BeaconViewController){
-        print("Sending data back to main vc: \(syncedDevices)")
-        self.syncedDevices = syncedDevices
-        print("Populater mainVC's syncedDevices \(self.syncedDevices)")
-    }
-}
-extension BeaconViewController: SendDataToMainVCProtocol{
-    
-    func sendData(syncedDevices: [CBPeripheral], sendingVC: BeaconViewController){
-        print("Sending data back to main vc: \(syncedDevices)")
-        print("Beacon version, i think should not happen")
-        self.syncedDevices = syncedDevices
-    }
-}
+
 
 
 
