@@ -7,7 +7,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -192,7 +191,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="cAo-uK-UlO">
-                                <rect key="frame" x="0.5" y="71" width="375" height="525"/>
+                                <rect key="frame" x="0.5" y="39.5" width="375" height="588"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="UUID:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dFf-w6-59H">
                                         <rect key="frame" x="165" y="0.0" width="45.5" height="30"/>
@@ -240,8 +239,23 @@
                                             <constraint firstAttribute="height" constant="150" id="pl8-y7-JOk"/>
                                         </constraints>
                                     </pickerView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FnF-36-PHg">
+                                        <rect key="frame" x="162.5" y="345" width="50" height="50"/>
+                                        <color key="backgroundColor" red="0.0" green="0.87292209887867656" blue="0.096685566953194496" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="ObO-hI-8Vb"/>
+                                            <constraint firstAttribute="width" secondItem="FnF-36-PHg" secondAttribute="height" multiplier="1:1" id="weU-ck-5ka"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="24"/>
+                                        <state key="normal" title="+">
+                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="addDeviceButtonHit:" destination="mks-rh-Urh" eventType="touchUpInside" id="2Fj-ft-zxP"/>
+                                        </connections>
+                                    </button>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="61f-Hb-GJh">
-                                        <rect key="frame" x="47.5" y="345" width="280" height="180"/>
+                                        <rect key="frame" x="47.5" y="408" width="280" height="180"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="180" id="J6h-mk-hsw"/>
@@ -250,27 +264,10 @@
                                     </tableView>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FnF-36-PHg">
-                                <rect key="frame" x="309" y="308" width="50" height="50"/>
-                                <color key="backgroundColor" red="0.0" green="0.87292209887867656" blue="0.096685566953194496" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="ObO-hI-8Vb"/>
-                                    <constraint firstAttribute="width" secondItem="FnF-36-PHg" secondAttribute="height" multiplier="1:1" id="weU-ck-5ka"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="24"/>
-                                <state key="normal" title="+">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="addDeviceButtonHit:" destination="mks-rh-Urh" eventType="touchUpInside" id="2Fj-ft-zxP"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="FnF-36-PHg" firstAttribute="trailing" secondItem="Rzu-mh-4zB" secondAttribute="trailingMargin" id="AVu-x0-hxU"/>
                             <constraint firstItem="cAo-uK-UlO" firstAttribute="leading" secondItem="Rzu-mh-4zB" secondAttribute="leading" id="De0-qy-uhQ"/>
-                            <constraint firstItem="FnF-36-PHg" firstAttribute="centerY" secondItem="Rzu-mh-4zB" secondAttribute="centerY" id="YPy-47-hLd"/>
                             <constraint firstItem="cAo-uK-UlO" firstAttribute="centerX" secondItem="Rzu-mh-4zB" secondAttribute="centerX" id="gyE-AS-OUG"/>
                             <constraint firstItem="cAo-uK-UlO" firstAttribute="centerY" secondItem="Rzu-mh-4zB" secondAttribute="centerY" id="ptz-4R-3ui"/>
                             <constraint firstItem="cAo-uK-UlO" firstAttribute="width" secondItem="Rzu-mh-4zB" secondAttribute="width" id="qqc-8S-kZi"/>

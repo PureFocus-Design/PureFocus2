@@ -11,8 +11,8 @@ import UIKit
 import CoreLocation
 import CoreBluetooth
 
-protocol MyProtocol: class {
-    func sendData(cbPeripherals: [CBPeripheral])
+protocol SendDataProtocol: class {
+    func sendData(syncedDevices: [CBPeripheral])
 }
 
 class BeaconViewController: UIViewController {
@@ -20,12 +20,16 @@ class BeaconViewController: UIViewController {
     var cbCentralManager: CBCentralManager!
     var locationManager: CLLocationManager!
     var duplicateDeviceCount: Int = 0
-    var delegate: MyProtocol?
+    weak var delegate: SendDataProtocol?
     
     // Checks for bluetooth devices that can connect
     internal var possiblePeripherals: [CBPeripheral] = []
     // connects and disconnects to test
-    var cbPeripherals: [CBPeripheral] = []
+    var cbPeripherals: [CBPeripheral] = []{
+        didSet{
+            beaconList.reloadAllComponents()
+        }
+    }
     // user activates from the tested devices
     var syncedDevices: [CBPeripheral] = []
     
@@ -52,13 +56,12 @@ class BeaconViewController: UIViewController {
             uuID?.placeholder = "Tap to enter manually"
         }
         uuID?.delegate = self
-        uuID?.font = uuID.font!.withSize(UIFont.smallSystemFontSize)
+        uuID?.font = uuID.font!.withSize(UIFont.buttonFontSize)
         statusTextfield?.textAlignment = .center
         statusTextfield?.delegate = self
         beaconList?.delegate = self
         beaconList?.dataSource = self
         uuID.delegate = self
-        uuID.font = uuID.font!.withSize(UIFont.smallSystemFontSize)
         statusTextfield.textAlignment = .center
         uuID.textAlignment = .center
         cbCentralManager = CBCentralManager()
@@ -77,17 +80,18 @@ class BeaconViewController: UIViewController {
                 print("Request SingleApp mode turn off success: \(success)")
             }
         }
+        delegate?.sendData(syncedDevices: syncedDevices)
         self.dismiss(animated: true) {
             print("Seguing back")
         }
     }
-    
+    /*
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("Segue called")
         let mainVC = segue.destination as! MainViewController
         print("MainVC: \(cbPeripherals)")
         mainVC.cbPeripherals = self.cbPeripherals
-    }
+    }*/
 
 }
 extension BeaconViewController: UITextFieldDelegate{
@@ -144,19 +148,23 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     // these methods return either a plain NSString, a NSAttributedString, or a view (e.g UILabel) to display the row for the component.
     // for the view versions, we cache any hidden and thus unused views and pass them back for reuse.
     // If you return back a different object, the old one will be released. the view will be centered in the row rect
-    
+    /*
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?{
         print("titleForRow: \(row)")
         
         // Dynamically fill titles with array of possible beacons
-        return "Beacon title"
-        
-    }
-    /*
+        return cbPeripherals[row].name
+    }*/
+    
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString?{
-        print("attributedTitleForRow: \(row)")
+        
+        let name: String = cbPeripherals[row].name!
+        let attributes = [ NSFontAttributeName: UIFont(name: "TimesNewRomanPSMT", size: 8.0)! ]
+        let fancyName = NSAttributedString.init(string: name, attributes: attributes)
+        print("attributedTitleForRow: \(fancyName)")
+        return fancyName
     }// attributed title is favored if both methods are implemented
- 
+ /*
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView{
         
     }
@@ -175,7 +183,7 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
-        return 3
+        return cbPeripherals.count
     }
 }
 extension BeaconViewController: CLLocationManagerDelegate{

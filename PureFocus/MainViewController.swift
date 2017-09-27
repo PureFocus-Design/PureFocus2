@@ -35,10 +35,10 @@ class MainViewController: UIViewController{
     
     var locationManager: CLLocationManager!
     let BRAND_IDENTIFIER = "com.purefocus"
-    var cbPeripherals: [CBPeripheral] = []
+    var syncedDevices: [CBPeripheral] = []
     var beaconRegions: [CLBeaconRegion]{
         var beaconRegions: [CLBeaconRegion] = []
-        for beacon in cbPeripherals{
+        for beacon in syncedDevices{
             let beaconRegion = CLBeaconRegion.init(proximityUUID: beacon.identifier, identifier: beacon.name ?? BRAND_IDENTIFIER)
             beaconRegion.notifyOnEntry = true
             beaconRegion.notifyOnExit = true
@@ -130,7 +130,7 @@ class MainViewController: UIViewController{
         SettingsVCButton.layer.borderWidth = 1
         iconView.layer.cornerRadius = 9
         iconView.layer.borderWidth = 1
-        if let validBeacon = cbPeripherals.last {
+        if let validBeacon = syncedDevices.last {
             inRangeTextField.textAlignment = .left
             inRangeTextField.placeholder = validBeacon.identifier.uuidString
         }else{
@@ -149,7 +149,7 @@ class MainViewController: UIViewController{
         }else{
             rangeBeacons()
         }
-        print("MainVC: cbPeripherals: \(cbPeripherals)")
+        print("syncedDevices: \(syncedDevices)")
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -194,7 +194,7 @@ class MainViewController: UIViewController{
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("Segueing")
         let beaconViewController = segue.destination as! BeaconViewController
-        beaconViewController.cbPeripherals = cbPeripherals
+        beaconViewController.syncedDevices = syncedDevices
     }
 }
 
@@ -228,12 +228,17 @@ extension MainViewController: CLLocationManagerDelegate {
                 inRangeTextField.text = "Beacon out of range"
                 
                 if isLocked{
+                    
                     alamo.singleAppModeLock(enable: false)
                     isLocked = false
                     if self.isBlocking == true{
                         self.isBlocking = false
                         if UIAccessibilityIsGuidedAccessEnabled(){
-                            print("Disabling SingleApp mode")
+                            print("Disabling GuidedAccess")
+                            UIAccessibilityRequestGuidedAccessSession(false){
+                                success in
+                                print("Request single app mode off success: \(success)")
+                            }
                         }
                     }
                     
@@ -248,15 +253,13 @@ extension MainViewController: CLLocationManagerDelegate {
                     if self.isBlocking == false{
                         // defaults.set(true, forKey: "beaconInRange")
                         self.isBlocking = true
-                        /*
-                         if !UIAccessibilityIsGuidedAccessEnabled(){
-                         print("Enabling single app mode success.")
-                         UIAccessibilityRequestGuidedAccessSession(true){
-                         success in
-                         print("Request single app mode on success: \(success)")
+                        if !UIAccessibilityIsGuidedAccessEnabled(){
+                            print("Enabling GuidedAccess")
+                            UIAccessibilityRequestGuidedAccessSession(true){
+                            success in
+                                print("Request single app mode on success: \(success)")
+                            }
                          }
-                         }*/
-                        alamo.singleAppModeLock(enable: true)
                     }
                 }
                 let beaconAccuracy = beacons.last!.accuracy
@@ -269,8 +272,8 @@ extension MainViewController: CLLocationManagerDelegate {
                 lastFiveReadings.append(beaconAccuracy)
 
             } else {
-                if cbPeripherals.count > 0{
-                    self.inRangeTextField.text = cbPeripherals.last!.identifier.uuidString
+                if syncedDevices.count > 0{
+                    self.inRangeTextField.text = syncedDevices.last!.identifier.uuidString
                 }
             }
         }
@@ -331,8 +334,8 @@ extension CLProximity: CustomStringConvertible{
         return String(self.rawValue)
     }
 }
-extension BeaconViewController: MyProtocol{
-    func sendData(cbPeripherals: [CBPeripheral]) {
+extension BeaconViewController: SendDataProtocol{
+    func sendData(syncedDevices cbPeripherals: [CBPeripheral]) {
         self.cbPeripherals = cbPeripherals
     }
 }
