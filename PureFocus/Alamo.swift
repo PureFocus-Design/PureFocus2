@@ -11,6 +11,9 @@ import Alamofire
 
 class AlamoNetwork{
     
+    // Future implementation:  You could write an API call that checked how long the app has been running
+    // and contacts someone if it's off.
+    
     func makeXMLHeaders()->String{
         
         let xmlheader1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"

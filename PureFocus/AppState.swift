@@ -7,12 +7,12 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 struct AppState{
     
     var internalAppState: AppState
     var singleAppModeState: SingleAppModeState
-    var inRange: Bool = false
     
     enum AppState{
         case terminated
@@ -31,4 +31,3 @@ struct AppState{
         self.singleAppModeState = singleAppModeState
     }
 }
-
