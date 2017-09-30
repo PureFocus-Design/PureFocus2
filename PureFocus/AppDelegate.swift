@@ -12,6 +12,29 @@ import CoreBluetooth
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
+    // APP TERMINATED CONNECTS TO ANY POWER, WAKES, DISCONNECTS, BEGINS RANGING
+    
+    // CONNECTING HAPPENS / DISCONNECTING FOLLOWS IMMEDIATELY
+    
+    // CONNECTING HAS NO CONTROL OVER THE STATE
+    
+    
+    
+    
+    // OVERALL APP FLOW TO ACCOMPLISH LOCKDOWN OF PHONE:
+    
+    // connects to device if in right range of power
+    
+    // profile installs via API call to enter single app mode
+    
+    // profile uninstalls via API call to leave single app mode after 5 minutes
+    
+    // query connected device for proper range every second or so
+    
+    // app continues to lock in and out by autonomous guided access after 5 minutes  (fallsback to single app if unsuccessful)
+    
+    // Completely out of range of device or termination of app leads to single app method (default)
+    
     // PROPERTIES:
 
     var window: UIWindow?
@@ -22,50 +45,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     let BRAND_IDENTIFIER = "com.purefocus"
     var deviceManager: CBCentralManager!
-    var bluetoothPeripheralAuthorized: Bool!
+
+    /*
+    var connectingRSSI: NSNumber!{
+        willSet{
+            print("Connecting RSSI: \(newValue)")
+        }
+    }*/
+    var deviceRSSIs: [CBPeripheral:NSNumber] = [:]
     // found when discovering any bluetooth for the first time
     internal var possiblePeripherals: [CBPeripheral] = []
     // tracks the number of repeat devices found and stops after a while
-    var duplicateDeviceCount: Int = 0
-    // found by testing connection to device
-    var cbPeripherals: [CBPeripheral] = []{
+    var duplicateDeviceCount: Int = 0{
         willSet{
-            print("cbPeripherals: \(cbPeripherals)")
+            print("duplicateDeviceCount: \(newValue)")
         }
     }
+    // found by testing connection to device
+    var cbPeripherals: [CBPeripheral] = []
     // installed by user hitting button
     var syncedDevices: [CBPeripheral] = []
-    var services: [CBUUID] {
-        var myServices: [CBUUID] = []
-        for device in syncedDevices{
-            
-            myServices.append(CBUUID(nsuuid: device.identifier))
-        }
-        
-        return myServices.map {CBUUID(nsuuid: UUID.init(uuidString: $0.uuidString)!)}
-    }
-    var deviceUUIDs: [CBUUID]{
-        var deviceUUIDs: [CBUUID] = []
-        for device in syncedDevices{
-            deviceUUIDs.append(CBUUID.init(nsuuid: device.identifier))
-        }
-        return deviceUUIDs
-    }
-
     
     // SINGLE APP / GUIDED ACCESS PROPERTIES
     
-    var isLocked: Bool!   // Single App
-    var isBlocking: Bool! // Guided Access
+    var isLocked: Bool = false   // Single App
+    var isBlocking: Bool = false // Guided Access
     
     // TO DO:  ADD SAVE/LOAD CODE FROM PERSITENT STORE
-    
-    // CUSTOM METHODS
-    
-    func initializeCoreBluetoothManager(){
-        deviceManager = CBCentralManager()
-        deviceManager.delegate = self
-    }
     
     // STANDARD METHODS
 
@@ -77,7 +83,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }else{
             appState.internalAppState = .foreground
         }
-
+        deviceManager = CBCentralManager()
+        deviceManager.delegate = self
         return true
     }
 
@@ -88,8 +95,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // foreground
             appState.internalAppState = .background
         }
-        // MARK ADD CODE: AUTH BLUETOOTH
-        bluetoothPeripheralAuthorized = true
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -116,55 +121,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 extension AppDelegate: CBCentralManagerDelegate, CBPeripheralDelegate{
     
-    // BEACON VC FUNCTIONALITY
-    
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        print("Inside delegate callback of Beacon.cbCentralManager.")
-        switch central.state{
-        case .poweredOn:
-            print("centralManager powered on")
-            deviceManager.scanForPeripherals(withServices: nil, options: nil)
-            print("cbCentralManager.isScanning \(deviceManager.isScanning)")
-        case .poweredOff:
-            print("centralManager powered off")
-        case .resetting:
-            print("centralManager resetting")
-        case .unauthorized:
-            print("centralManager unauthorized")
-        // ADD CODE TO DEMAND AUTH
-        case .unknown:
-            print("centralManager unknown")
-        case .unsupported:
-            print("centralManager unsupported")
-        }
         
-        
-        // MainVC Implements
-        
-        
-        print("Inside delegate callback of Main.cbCentralManager.")
+
         switch central.state{
         case .poweredOn:
             if !central.isScanning{
-                var scanMethod = ""
-                if syncedDevices.count > 0 {
-                    scanMethod = "specific devices"
-                    deviceManager.scanForPeripherals(withServices: services, options: nil)
-                }else{
-                    // if beaconVC is active, scan for everything
-                    // if mainVC is active, scan for synced devices
-                    central.scanForPeripherals(withServices: nil, options: nil)
-                    scanMethod = "everything"
-                }
-                print("centralManager powered on and started scanning (\(central.isScanning)) for \(scanMethod)")
-                print("deviceUUIDs: \(deviceUUIDs)")
-
+                central.scanForPeripherals(withServices: nil, options: nil)
+                print("CentralManager powered on and started scanning.")
             }
         case .poweredOff:
             print("centralManager powered off")
         case .resetting:
             print("centralManager resetting")
         case .unauthorized:
+            // ADD CODE TO DEMAND AUTH
             print("centralManager unauthorized")
         case .unknown:
             print("centralManager unknown")
@@ -174,231 +145,236 @@ extension AppDelegate: CBCentralManagerDelegate, CBPeripheralDelegate{
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        // MARK ADD CODE:  Consider a rescanning button
+        print("Discovered device \(peripheral.name ?? "unknown"), .\(peripheral.state), power: \(RSSI)")
+        if RSSI.description == "127" {
+            // we only want devices with a power rating, 127 is the ping code for self
+            return
+        }
+        if syncedDevices.contains(peripheral) {
+            switch peripheral.state {
+            case .disconnected:
+                peripheral.delegate = self
+                if Int(deviceRSSIs[peripheral]!) < -90 {
+                    print("Found device in range")
+                    lockPhone(state: appState)
+                    // connects to wake up
+                    deviceManager.connect(peripheral, options: nil)
+                }
+                if Int(deviceRSSIs[peripheral]!) >= -90 {
+                    print("Device out of range")
+                    unlockPhone(state: appState)
+                }
+                
+            default:
+                print("Found \(peripheral.name ?? peripheral.identifier.uuidString) \(peripheral.state)")
+            }
+            
+        }
         
-        // BeaconVC code
-        print("CB: Duplicate device count: \(duplicateDeviceCount)")
+            
+        self.deviceRSSIs[peripheral] = RSSI
+        print("advertisement Data: \(advertisementData)")
+        
+        // Check for too many duplicates first, also need to include 10 second timeout for 0 devices left case
+        
         if duplicateDeviceCount > 10 {  // exits after 10 duplicate names are found
             print("Stopping scan")
             self.deviceManager.stopScan()
-            print("Is anyone scanning?: \(deviceManager.isScanning)")
-            print("CB: possiblePeripherals: \(possiblePeripherals)")
-            print("CB: Synced devices: \(syncedDevices)")
-            print("CB: cbPeripherals: \(cbPeripherals)")
+            possiblePeripherals = []
+            print("Is anyone scanning?: \(deviceManager.isScanning), final results:")
+            print("possiblePeripherals: \(possiblePeripherals.map({$0.name ?? $0.identifier.uuidString}))")
+            print("cbPeripherals: \(cbPeripherals.map({$0.name ?? $0.identifier.uuidString}))")
+            print("Synced devices: \(syncedDevices.map({$0.name ?? $0.identifier.uuidString}))")
+            for possiblePeripheral in possiblePeripherals{
+                if possiblePeripheral.state == .connected || possiblePeripheral.state == .connecting {
+                    // possiblePeripherals is for testing connections, should not be connected
+                    central.cancelPeripheralConnection(peripheral)
+                }
+            }
             for cbPeripheral in cbPeripherals{
-                if cbPeripheral.state == .connected{
+                if cbPeripheral.state == .connected || cbPeripheral.state == .connecting {
                     // cbPeripherals is for testing connections, should not be connected
                     central.cancelPeripheralConnection(peripheral)
                 }
             }
+            // possiblePeripherals = []
+            // leave discovery after 10 repeats and turning off scan
+            if appDelegate.syncedDevices.count > 0 {
+                var cbUUIDs: [CBUUID] = []
+                for uuID in appDelegate.syncedDevices.map({$0.identifier}){
+                    cbUUIDs.append(CBUUID(nsuuid: uuID))
+                }
+                print("Looking for \(cbUUIDs.last!)")
+                appDelegate.duplicateDeviceCount = 0
+                appDelegate.deviceManager.scanForPeripherals(withServices: cbUUIDs, options: nil)
+                //appDelegate.deviceManager.scanForPeripherals(withServices: cbUUIDs, options: nil)
+                // maybe indicate multiple somehow on homescreen later
+
+            }
             return
         }
-        print("DISCOVERED DEVICE: ")
-        print("uuid \(peripheral.identifier)")
-        // let bluetoothDevice = BluetoothDevice(uuID: peripheral.identifier.uuidString)
-        print("state: \(peripheral.state)")
-        print("advertisement Data: \(advertisementData)")
-        var isDuplicate = false
+        
+        // ask for those that want to connect
         if let connectable = advertisementData["kCBAdvDataIsConnectable"] as? Bool{
-            print("connectable: \(connectable)")
+            print("Connectable: \(connectable)")
             if connectable{
-                print("Attempting connection.")
-                for possiblePeripheral in possiblePeripherals{
-                    if peripheral.name == possiblePeripheral.name{
-                        isDuplicate = true
-                    }
-                }
-                if isDuplicate{
+                if possiblePeripherals.contains(peripheral){
                     duplicateDeviceCount += 1
-                }else{
-                    self.possiblePeripherals.append(peripheral)
-                }
-                print("CB: possiblePeripherals: \(possiblePeripherals)")
-                central.connect(peripheral, options: nil)
-            }
-        }
-        if let advertisedName = advertisementData["kCBAdvDataLocalName"] as? String{
-            print("advertisedName: \(advertisedName)")
-            print("Checking uniqueness...")
-            for device in cbPeripherals{
-                if advertisedName == device.name{
-                    // checks for uniqueness
-                    duplicateDeviceCount += 1
-                    print("duplicate found, total: \(duplicateDeviceCount)")
                     return
                 }
-            }
-            print("DEVICE IS UNIQUE")
-        }
-    
-        // OLD MAIN VC DISCOVERY, MERGE SOON
-
-        print("Main.didDiscover device \(peripheral.name ?? "unknown"), .\(peripheral.state), \(RSSI)")
-        for device in syncedDevices{
-            print("Interested in this: \(device.name ?? "unknown"), \(device.state)")
-            if device.state == .disconnected{
-                deviceManager.connect(device, options: nil)
-            }
-            if peripheral.state == .disconnected{
-                deviceManager.connect(device, options: nil)
-            }
-        }
-        // OLD CORE LOCATION CODE, WE WANT SIMILAR FUNCTIONALITY
-        
-        var lastFiveReadings: [Double] = []{
-            willSet{
-                print("Updating lastFiveReadings: \(newValue)")
-            }
-        }
-        
-        var readingsAverage: Double{
-            
-            var total = 0.0
-            lastFiveReadings.forEach { (reading) in
-                total += reading
-            }
-            let returnValue = total/Double(lastFiveReadings.count)
-            print("NEW! readingsAverage \(returnValue)")
-            return returnValue
-        }
-        for device in syncedDevices{
-            if peripheral.identifier == device.identifier{
-                print("DISCOVERED SYNCED DEVICE: ")
-                print("uuid \(peripheral.identifier)")
-                print("RSSI: \(RSSI)")
-                switch  peripheral.state {
-                case .connected:
-                    if lastFiveReadings.count == 5{
-                        // remove old reading if full
-                        lastFiveReadings.remove(at: 0)
-                    }
-                    lastFiveReadings.append(Double(RSSI))
-                    return
-                case .connecting,.disconnecting:
-                    return
-                case .disconnected:
+                self.possiblePeripherals.append(peripheral)
+                if !cbPeripherals.contains(peripheral) && peripheral.state == .disconnected{
+                    // tests connection among those that say they're connectable
+                    peripheral.delegate = self
+                    print("Attempting connection to \(peripheral.name ?? peripheral.identifier.uuidString)")
                     central.connect(peripheral, options: nil)
                 }
             }
         }
+    }
+/*
+    var readingsAverage: Double{
         
-
-        
-        if syncedDevices.count > 0 && bluetoothPeripheralAuthorized {
-            
-            if readingsAverage > 4.20{
- 
-                //  Send messgae to mainVC: "Beacon out of range"
-                
-                if isLocked{
-                    
-                    alamo.singleAppModeLock(enable: false)
-                    isLocked = false
-                    if self.isBlocking == true{
-                        if UIAccessibilityIsGuidedAccessEnabled(){
-                            print("Disabling GuidedAccess")
-                            UIAccessibilityRequestGuidedAccessSession(false){
-                                success in
-                                print("Request single app mode off success: \(success)")
-                                self.isBlocking = false
-                            }
-                        }
-                    }
-                    
-                }else if readingsAverage > 0.0{
-                    // Send message to mainVC: "Beacon in range"
-                    if !isLocked{
-                        alamo.singleAppModeLock(enable: true)
-                        isLocked = true
-                    }
-                    if self.isBlocking == false{
-                        alamo.singleAppModeLock(enable: true)
-                        // MARK ADD CODE:  ADD COMPLETION HANDLER TO ABOVE FUNCTION
-                        self.isBlocking = true
-                        if !UIAccessibilityIsGuidedAccessEnabled(){
-                            print("Enabling GuidedAccess")
-                            UIAccessibilityRequestGuidedAccessSession(true){
-                                success in
-                                print("Request single app mode on success: \(success)")
-                            }
-                        }
-                    }
-                }
-
-                if lastFiveReadings.count == 5{
-                    // remove old reading if full
-                    lastFiveReadings.remove(at: 0)
-                }
-                lastFiveReadings.append(Double(RSSI))
-                
-            } else {
-                if syncedDevices.count > 0{
-                    // send "hit plus to add beacon notice to main.textfield
-                }
-            }
+        var total = 0.0
+        lastFiveReadings.forEach { (reading) in
+            total += reading
         }
-
-        
+        let returnValue = total/Double(lastFiveReadings.count)
+        print("NEW! readingsAverage \(returnValue)")
+        return returnValue
     }
     
+    func peripheral(_ peripheral: CBPeripheral,
+                    didReadRSSI RSSI: NSNumber,
+                    error: Error?){
+        print("didReadRSSI \(RSSI)")
+        connectingRSSI = RSSI
+    }*/
+    
+
+    
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print("Main.didConnect to: \(peripheral)")
-        // connection wakes the app, API call to lock
+        print("Did connect to: \(peripheral.name ?? peripheral.identifier.uuidString)")
+    
         
-        // below may be redundent
+        peripheral.readRSSI()
+        
+        print("Power of connection: \(Double(deviceRSSIs[peripheral]!))")
+
+        // Passed test, transfers from possiblePeripherals to cbPeripherals
+        if !cbPeripherals.contains(peripheral) && possiblePeripherals.contains(peripheral){
+            if let myIndex = possiblePeripherals.index(of: peripheral){
+                possiblePeripherals.remove(at: myIndex)
+                cbPeripherals.append(peripheral)
+                central.cancelPeripheralConnection(peripheral)
+            }
+        }
+        if !syncedDevices.contains(peripheral){
+            print("Cancelling: \(peripheral.name ?? peripheral.identifier.uuidString), just testing.")
+            deviceManager.cancelPeripheralConnection(peripheral)
+            return
+        }
+        print("Cancelling: \(peripheral.name ?? peripheral.identifier.uuidString) so that we can range it")
+        deviceManager.cancelPeripheralConnection(peripheral)
+        // connection wakes the app, API call to lock
+        /*
         for syncedDevice in syncedDevices{
             // checks by iterating over synced device array to verify it has a matching name
             if peripheral.name == syncedDevice.name{
-                // locks upon connection
-                print("Locking down phone via API call")
-                lockdownPhone(auto: false)
-                // then unlock, then range beacons and enter autonomously
+         
+                var iterations = 0
+                while (connectingRSSI == nil && iterations < 5){
+                    // if the iterator times out or the power instantiates, we break the loop
+                    print("Looping through while asking for power reading, number of times: \(iterations)")
+                    peripheral.readRSSI()
+                    guard let vaildWindow = self.window else {return}
+                    guard let validVC = vaildWindow.rootViewController else {return}
+                    validVC.delay(bySeconds: 0.1, closure: {})
+                    iterations += 1
+                }
+                
+                // locks upon connection if power is correct
+                
+                print("Connecting power: \(deviceRSSIs[peripheral]!)")
+                // print("Found valid power setting for newly connected device: \(validConnectingRSSI)")
+                // if let validConnectingRSSI = connectingRSSI{
+                    if Double(deviceRSSIs[peripheral]!) <= -50.0{
+                        lockPhone(state: appState)
+                    }else if Double(deviceRSSIs[peripheral]!) > -50.0{
+                        // Send message to mainVC: "Beacon in range"
+                        unlockPhone(state: appState)
+                    }
+               //  }
             }
-        }
-        // above may be redundant, since we only ask to connect to devices in our synced device array
-        
-        // BEACON VC CODE FOLLOWS, WILL HAVE TO COMBINE THE TWO
-        
-        print("Beacon.didConnect to: \(peripheral)")
-        peripheral.delegate = self
-        var isDuplicate = false
-        for cbPeripheral in cbPeripherals{
-            if peripheral.name == cbPeripheral.name{
-                isDuplicate = true
+            if lastFiveReadings.count == 5{
+                // remove old reading if full
+                lastFiveReadings.remove(at: 0)
             }
-        }
-        if !isDuplicate{
-            cbPeripherals.append(peripheral)
-            print("CB: cbPeripherals: \(cbPeripherals)")
-            // cancel connection because we are just testing
-            central.cancelPeripheralConnection(peripheral)
-        }
+            lastFiveReadings.append(Double(connectingRSSI))
+        }*/
     }
     
-    func lockdownPhone(auto: Bool){
-        if !auto{
-            if !isLocked{
-                alamo.singleAppModeLock(enable: true)
-                isLocked = true
-            }
-        }else{
-            // autonomous method
+    func lockPhone(state: AppState){
+        switch appState.internalAppState{
+        case AppState.AppState.foreground:
+            //var successfulGuidedAccess: Bool = false
             if self.isBlocking == false{
-                // MARK ADD CODE:  ADD COMPLETION HANDLER TO ABOVE FUNCTION
+                // Tries to block with in app method first, falls back to API call
+                
                 if !UIAccessibilityIsGuidedAccessEnabled(){
                     print("Enabling GuidedAccess")
                     UIAccessibilityRequestGuidedAccessSession(true){
                         success in
-                        print("Request single app mode on success: \(success)")
-                        self.isBlocking = true
+                        print("Request guided access mode on success: \(success)")
+                        if success{
+                            self.isBlocking = true
+                        }else{
+                            self.isBlocking = false
+                            // fall back to API method if other one doesn't work
+                            self.alamo.singleAppModeLock(enable: true)
+                            print("Locking via api instead.")
+                            self.isLocked = true
+                        }
                     }
                 }
             }
+        default:
+            alamo.singleAppModeLock(enable: true)
+            isLocked = true
+        }
+    }
+    func unlockPhone(state: AppState){
+        switch appState.internalAppState{
+        case AppState.AppState.foreground:
+            if self.isBlocking == true{
+                // Tries to unlock with in app method first, falls back to API call
+                if !UIAccessibilityIsGuidedAccessEnabled(){
+                    print("Disabling GuidedAccess")
+                    UIAccessibilityRequestGuidedAccessSession(false){
+                        success in
+                        print("Request guided access mode off success: \(success)")
+                        if success{
+                            self.isBlocking = false
+                        }else{
+                            // fallback method
+                            self.alamo.singleAppModeLock(enable: false)
+                            self.isLocked = false
+                        }
+                    }
+                }
+            }
+            if isLocked {
+                alamo.singleAppModeLock(enable: false)
+                isLocked = false
+            }
+        default:
+            alamo.singleAppModeLock(enable: true)
+            isLocked = true
         }
     }
     
     func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]){
-        print("Chaconas: \(dict)")
+        print("willRestoreState: \(dict)")
         for key in dict.keys{
             print("\(key): \(dict[key]!)")
         }

@@ -36,8 +36,10 @@
 	<string>App can whitelist your contacts</string>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string></string>
 		<string>location</string>
+		<string>bluetooth-central</string>
+		<string>external-accessory</string>
+		<string>fetch</string>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>

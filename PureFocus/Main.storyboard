@@ -13,7 +13,7 @@
         <!--Main View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="PureFocus" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController restorationIdentifier="MainViewController" id="BYZ-38-t0r" customClass="MainViewController" customModule="PureFocus" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -181,7 +181,7 @@
         <!--BeaconViewController-->
         <scene sceneID="ZPE-xM-ZkG">
             <objects>
-                <viewController storyboardIdentifier="main" title="BeaconViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="mks-rh-Urh" customClass="BeaconViewController" customModule="PureFocus" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController restorationIdentifier="BeaconViewController" storyboardIdentifier="main" title="BeaconViewController" id="mks-rh-Urh" customClass="BeaconViewController" customModule="PureFocus" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="wpA-1h-y4l"/>
                         <viewControllerLayoutGuide type="bottom" id="YiS-eb-Yda"/>

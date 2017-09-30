@@ -9,15 +9,33 @@
 import UIKit
 import Foundation
 import Alamofire
-// import CoreBluetooth
+import CoreBluetooth
 
-// moving CoreBlueTooth to AppDelegate
+// FANCY DEPLOYMENT:
+
+// 1. APP MAKES API CALL TO SERVER FOR OLD GROUP IDS
+// 2. APP CREATES A GROUP REQUEST
+// 3. APP MAKES API CALL TO SERVER AND CHECKS FOR THE NEW ID
+// 4. APP MAKES API CALL TO ASSIGN DEVICE TO GROUP AND THEN ASSIGN SINGLE APP PROFILE TO GROUP
+
+// SIMPLE DEPLOYMENT:
+
+// MAKES API CALL TO CHECK FOR DEVICE GROUPS AND PUTS IN PICKER WHEEL FOR NOW
+// ONCE USER CLICKS ADD, APP MAKES API CALL TO ASSIGN DEVICE TO GROUP AND THEN ASSIGN SINGLE APP PROFILE TO GROUP
 
 let appDelegate = UIApplication.shared.delegate! as! AppDelegate
 
 class MainViewController: UIViewController{
 
     // PROPERTIES
+    var syncedDevices: [CBPeripheral] = appDelegate.syncedDevices{
+        willSet{
+            print("Adding name of device to mainVC")
+            if newValue.count > 0{
+                self.inRangeTextField.text = newValue.last!.name
+            }
+        }
+    }
     
     // Networking and emergency calling
     
@@ -32,8 +50,6 @@ class MainViewController: UIViewController{
     // Device setup
     
     var beaconViewController: BeaconViewController!
-    // var locationTrackingAuthorized: Bool = false
-    var bluetoothPeripheralAuthorized: Bool!
     
     var isLandscape: Bool{
         switch UIDevice.current.orientation {
@@ -84,11 +100,13 @@ class MainViewController: UIViewController{
     
     @IBAction func emergencyCallHit(_ sender: Any) {
         print("Calling 911")
+        
+        // either/or scenario, good case for state machine
+        
         if appDelegate.isLocked {
             appDelegate.alamo.singleAppModeLock(enable: false)
             appDelegate.isLocked = false
-        }
-        if UIAccessibilityIsGuidedAccessEnabled(){
+        }else if UIAccessibilityIsGuidedAccessEnabled(){
             print("Disabling SingleApp mode")
             UIAccessibilityRequestGuidedAccessSession(false){
                 success in
@@ -127,7 +145,6 @@ class MainViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("MainVC.viewDidLoad")
         setupView()
     }
     override func viewDidLayoutSubviews() {
@@ -200,60 +217,7 @@ extension UIViewController{
         }
     }
 }
-/*
 
-extension MainViewController: CBCentralManagerDelegate, CBPeripheralDelegate{
- 
-    
-    func lockdownPhone(auto: Bool){
-
-        if !auto{
-            if !isLocked{
-                alamo.singleAppModeLock(enable: true)
-                isLocked = true
-            }
-        }else{
-            // autonomous method
-            if self.isBlocking == false{
-                // MARK ADD CODE:  ADD COMPLETION HANDLER TO ABOVE FUNCTION
-                if !UIAccessibilityIsGuidedAccessEnabled(){
-                    print("Enabling GuidedAccess")
-                    UIAccessibilityRequestGuidedAccessSession(true){
-                        success in
-                        print("Request single app mode on success: \(success)")
-                        self.isBlocking = true
-                    }
-                }
-            }
-        }
-    }
-    
-    /*
-    func centralManagerDidUpdateState(_ central: CBCentralManager){
-     
-
-    }*/
-    func centralManager(_ central: CBCentralManager, willRestoreState dict: [String : Any]){
-        print("centralManager.willRestoreState: \(dict)")
-        // MARK TO DO: MOVE centralManager to appDelegate
-        
-        // First method invoked when your app is relaunched the background to complete Bluetooth-related task
-        
-        // Use this method to synchronize your app's state with the state of the Bluetooth system
-        
-        // dict = A dictionary containing information about central</i> that was preserved
-        
-        // CBCentralManagerRestoredStatePeripheralsKey: [CBPeripheral]
-        // CBCentralManagerRestoredStateScanServicesKey:  [UUID]
-        // CBCentralManagerRestoredStateScanOptionsKey: Dict of the scannnning options
-        
-    }
-    
-    // Callback methods to communicate with bluetooth device
-    
-}
-
-*/
 
 
 
