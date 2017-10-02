@@ -63,11 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // found when discovering any bluetooth for the first time
     internal var possiblePeripherals: [CBPeripheral] = []
     // tracks the number of repeat devices found and stops after a while
-    var duplicateDeviceCount: Int = 0{
-        willSet{
-            print("duplicateDeviceCount: \(newValue)")
-        }
-    }
+    var duplicateDeviceCount: Int = 0
     // found by testing connection to device
     var cbPeripherals: [CBPeripheral] = []
     // installed by user hitting button
@@ -95,12 +91,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         success in
                         print("Request guided access mode on success: \(success)")
                         if success{
+                            self.mainVC.inRangeTextField.text = "Locking phone in app"
                             self.isBlocking = true
                         }else{
                             self.isBlocking = false
                             // fall back to API method if other one doesn't work
                             self.alamo.singleAppModeLock(enable: true)
                             print("Locking via api instead.")
+                            self.mainVC.inRangeTextField.text = "Locking phone remotely"
                             self.isLocked = true
                         }
                     }
@@ -279,7 +277,7 @@ extension AppDelegate: CBCentralManagerDelegate, CBPeripheralDelegate{
         
             
         self.deviceRSSIs[peripheral] = RSSI
-        print("advertisement Data: \(advertisementData)")
+
         /*  MARK ADD CODE, MAKE WAY TO BREAK BASED ON WHICH VIEW CONTROLLER IS IN VIEW
          
         // Check for too many duplicates first, also need to include 10 second timeout for 0 devices left case
@@ -323,7 +321,6 @@ extension AppDelegate: CBCentralManagerDelegate, CBPeripheralDelegate{
         */
         // ask for those that want to connect
         if let connectable = advertisementData["kCBAdvDataIsConnectable"] as? Bool{
-            print("Connectable: \(connectable)")
             if connectable{
                 if possiblePeripherals.contains(peripheral){
                     duplicateDeviceCount += 1
