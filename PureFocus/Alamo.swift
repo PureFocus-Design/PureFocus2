@@ -36,7 +36,7 @@ class AlamoNetwork{
             
             // Ryan's URL group, comment out and and uncomment yours
             // let assignProfileToGroup2 = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1240/device_groups/32489"
-            let assignProfileToGroup = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1240/device_groups/32676"
+            let assignProfileToGroup = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1240/device_groups/103140"
             
             // Kelly and Joe, switch this commented out link with the one above.  This thing is hard-coded for now.
             //  let assignProfileToGroup = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1241/device_groups/103140"
