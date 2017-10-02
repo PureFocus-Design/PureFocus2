@@ -22,22 +22,6 @@ class BeaconViewController: UIViewController{
     
     var mainVC: MainViewController!
     
-    var cbPeripherals: [CBPeripheral] = appDelegate.cbPeripherals{
-        didSet{
-            beaconList.reloadAllComponents()
-            if cbPeripherals.count == 1{
-                uuID.text = cbPeripherals.last!.identifier.uuidString
-            }
-        }
-    }
-    var syncedDevices: [CBPeripheral] = appDelegate.syncedDevices{
-        didSet{
-            if syncedDevicesTableView != nil{
-                syncedDevicesTableView.reloadData()
-            }
-        }
-    }
-    
     @IBOutlet weak var uuID: UITextField!
     
     @IBOutlet weak var beaconList: UIPickerView!
@@ -48,11 +32,14 @@ class BeaconViewController: UIViewController{
 
     @IBAction func addDeviceButtonHit(_ sender: Any) {
         
-        print("Transferring device from cbPeripherals to syncedDevices")
-        let myIndex = beaconList.selectedRow(inComponent: 0)
-        appDelegate.syncedDevices.append(appDelegate.cbPeripherals[myIndex])
-        appDelegate.cbPeripherals.remove(at: myIndex)
-        print("SyncedDevices \(appDelegate.syncedDevices.map({$0.name ?? $0.identifier.uuidString}))")
+        // 
+        
+        let beacon = appDelegate.cbPeripherals[beaconList.selectedRow(inComponent: 0)]
+        appDelegate.syncedDevices.append(beacon)
+        appDelegate.cbPeripherals.remove(at: appDelegate.cbPeripherals.index(of: beacon)!)
+        print("Result of transfer from cbPeripherals to syncedDevices: ")
+        print("cbPeripherals: \(appDelegate.cbPeripherals.map({$0.id}))")
+        print("SyncedDevices: \(appDelegate.syncedDevices.map({$0.id}))")
 
         self.syncedDevicesTableView.reloadData()
 
@@ -62,6 +49,8 @@ class BeaconViewController: UIViewController{
 
     @IBAction func mainButtonHit(_ sender: Any) {
         print("mainHit")
+        let segue = UIStoryboardSegue.init(identifier: "backToMain", source: self, destination: mainVC)
+        self.unwind(for: segue, towardsViewController: mainVC)
             
     }
     
@@ -78,7 +67,7 @@ class BeaconViewController: UIViewController{
         syncedDevicesTableView.delegate = self
         syncedDevicesTableView.dataSource = self
         syncedDevicesTableView.backgroundColor = UIColor.init(red: 255, green: 255, blue: 204)
-        print("Synced devices: \(syncedDevices)")
+        print("Synced devices: \(appDelegate.syncedDevices)")
     }
 
     override func viewDidLoad() {
@@ -94,9 +83,24 @@ class BeaconViewController: UIViewController{
             return false
         }
     }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        if let mainVC = segue.destination as? MainViewController{
+            mainVC.inRangeTextField.text = "Connecting to \(appDelegate.syncedDevices.last!.name ?? "unknown")"
+        }else{
+            print("Couldn't find mainVC")
+        }
+    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Will move this functionality to the icon menu eventually
+        var updateMainVC: String{
+            if appDelegate.syncedDevices.count > 0 {
+                return "Searching for \(appDelegate.syncedDevices.last!.id)"
+            }
+            return "No devices synced, hit + to add"
+        }
+        self.mainVC.inRangeTextField.text = updateMainVC
         self.dismiss(animated: true) {
             print("Seguing back...")
             
@@ -105,12 +109,14 @@ class BeaconViewController: UIViewController{
                 for uuID in appDelegate.syncedDevices.map({$0.identifier}){
                     cbUUIDs.append(CBUUID(nsuuid: uuID))
                 }
-                print(cbUUIDs)
+                print("cbUUIDs: \(cbUUIDs)")
                 appDelegate.duplicateDeviceCount = 0
-                appDelegate.deviceManager.scanForPeripherals(withServices: nil, options: nil)
-                //appDelegate.deviceManager.scanForPeripherals(withServices: cbUUIDs, options: nil)
+                // appDelegate.deviceManager.stopScan()
+                
+                //appDelegate.deviceManager.scanForPeripherals(withServices: [], options: nil)
+                // appDelegate.deviceManager.scanForPeripherals(withServices: [CBUUID(string: "40f3859081a2271286945900a135")], options: nil)
+                print("Device manager is scanning: \(appDelegate.deviceManager.isScanning)")
                 // maybe indicate multiple somehow on homescreen later
-                self.mainVC.inRangeTextField.text = "Connecting to \(appDelegate.syncedDevices.last!.name ?? "unknown")"
             }
         }
     }
@@ -144,7 +150,7 @@ extension BeaconViewController: UITextFieldDelegate{
         // called when 'return' key pressed. return NO to ignore.
         // validate data before returning
         if textField.accessibilityIdentifier == "UUID"{
-            if let syncedDevice = syncedDevices.last{
+            if let syncedDevice = appDelegate.syncedDevices.last{
                 textField.text! = syncedDevice.identifier.uuidString
             }
         }
@@ -180,8 +186,8 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString?{
         let attributes = [ NSFontAttributeName: UIFont(name: "TimesNewRomanPSMT", size: 12.0)! ]
         var fancyName: NSAttributedString!
-        if cbPeripherals.count > 0{
-            if let name: String = cbPeripherals[row].name{
+        if appDelegate.cbPeripherals.count > 0{
+            if let name: String = appDelegate.cbPeripherals[row].name{
                 fancyName = NSAttributedString.init(string: name, attributes: attributes)
                 return fancyName
             }
@@ -196,8 +202,8 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     }
  */
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int){
-        if cbPeripherals.count > 0{
-            self.uuID.text = cbPeripherals[row].identifier.uuidString
+        if appDelegate.cbPeripherals.count > 0{
+            self.uuID.text = appDelegate.cbPeripherals[row].identifier.uuidString
         }
     }
     
@@ -210,7 +216,7 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     
     // returns the # of rows in each component..
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
-        return cbPeripherals.count
+        return appDelegate.cbPeripherals.count
     }
 }
 
@@ -221,6 +227,7 @@ extension BeaconViewController: UITableViewDelegate, UITableViewDataSource{
     // number of rows based on bluetooth devices synced to app
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        print("numberOfRowsInSection: \(appDelegate.syncedDevices.count)")
         return appDelegate.syncedDevices.count
     }
     
@@ -236,8 +243,11 @@ extension BeaconViewController: UITableViewDelegate, UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            syncedDevices.remove(at: indexPath.row)
-            tableView.reloadData()
+            print("indexPath: \(indexPath)")
+            print("syncedDevices: \(appDelegate.syncedDevices)")
+            appDelegate.syncedDevices.remove(at: indexPath.row)
+            syncedDevicesTableView.reloadData()
+            print("syncedDevices: \(appDelegate.syncedDevices)")
         }
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -257,6 +267,11 @@ extension CBPeripheralState: CustomStringConvertible{
         case .disconnecting:
             return "disconnecting"
         }
+    }
+}
+extension CBPeripheral{
+    var id: String{
+        return self.name ?? self.identifier.uuidString
     }
 }
 

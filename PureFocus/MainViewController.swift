@@ -25,6 +25,8 @@ import CoreBluetooth
 
 let appDelegate = UIApplication.shared.delegate! as! AppDelegate
 
+// TO DO:  ADD ACCT BUTTON
+
 class MainViewController: UIViewController{
 
     // PROPERTIES
@@ -98,6 +100,18 @@ class MainViewController: UIViewController{
     
     @IBOutlet weak var inRangeTextField: UITextField!
     
+    @IBAction func beaconButtonHit(_ sender: Any) {
+        beaconViewController = BeaconViewController()
+        let beaconStoryboard = UIStoryboard.init(name: "Beacon", bundle: nil)
+        let vc = beaconStoryboard.instantiateInitialViewController()!
+        let beaconVC = vc as! BeaconViewController
+        beaconVC.mainVC = self
+        present(vc, animated: true) {
+            print("Segue to beacon completed.")
+        }
+    }
+    
+    
     @IBAction func emergencyCallHit(_ sender: Any) {
         print("Calling 911")
         
@@ -140,6 +154,7 @@ class MainViewController: UIViewController{
         }else{
             inRangeTextField?.placeholder = "Tap + button to add beacon"
         }
+        navigationController!.isNavigationBarHidden = true
     }
     // CALL BELOW FUNCTION WHEN APPDELEGATE FINDS CONNECTION
     
@@ -174,7 +189,7 @@ class MainViewController: UIViewController{
         let beaconViewController = segue.destination as! BeaconViewController
         beaconViewController.mainVC = self
     }
-    @IBAction func unwindToMain(segue:UIStoryboardSegue) { } // Hook up to icon later
+    @IBAction func unwindToMain(segue:UIStoryboardSegue) { print("Unwinding to main")} // Hook up to icon later
     
 }
 
