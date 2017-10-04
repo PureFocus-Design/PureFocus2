@@ -14,6 +14,17 @@ class AlamoNetwork{
     // Future implementation:  You could write an API call that checked how long the app has been running
     // and contacts someone if it's off.
     
+    func checkDevices(){
+        
+        // checks devices and returns a list
+        
+        let myLink = "https:a.simplemdm"
+        let req = Alamofire.request(myLink, method: .get, parameters: nil, encoding: "", headers: nil)
+        req.response { (response) in
+            print("checkDevices response: \(response)")
+        }
+    }
+    
     func makeXMLHeaders()->String{
         
         let xmlheader1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -39,7 +50,7 @@ class AlamoNetwork{
             let assignProfileToGroup = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1240/device_groups/103140"
             
             // Kelly and Joe, switch this commented out link with the one above.  This thing is hard-coded for now.
-            //  let assignProfileToGroup = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1241/device_groups/103140"
+            //  let assignProfileToGroup = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1240/device_groups/103140"
             
             let req = Alamofire.request(assignProfileToGroup,
                                         method: .post, parameters: [:],
@@ -48,7 +59,7 @@ class AlamoNetwork{
         }else{
             
             // Ryan's URL group, comment out and uncomment yours
-            let removeProfile = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1241/device_groups/32489"
+            let removeProfile = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1240/device_groups/103140"
             
             // Kelly and Joe, switch this commented out link with the one above.  This thing is hard-coded for now.
             // let removeProfile = "https://a.simplemdm.com/api/v1/custom_configuration_profiles/1241/device_groups/103140"
@@ -60,8 +71,6 @@ class AlamoNetwork{
             print(req)
         }
     }
-    
-    
 }
 extension String: ParameterEncoding {
     

@@ -52,6 +52,7 @@ class MainViewController: UIViewController{
     // Device setup
     
     var beaconViewController: BeaconViewController!
+    var accountViewController: AccountViewController!
     
     var isLandscape: Bool{
         switch UIDevice.current.orientation {
@@ -127,9 +128,30 @@ class MainViewController: UIViewController{
                 print("Request SingleApp mode turn off success: \(success)")
             }
         }
-        delay(bySeconds: 30, dispatchLevel: .background) {
+        delay(bySeconds: 5) {
             self.call911()
         }
+    }
+    
+    @IBAction func accountButtonHit(_ sender: Any) {
+        accountViewController = AccountViewController()
+        let accountStoryboard = UIStoryboard.init(name: "Account", bundle: nil)
+        let vc = accountStoryboard.instantiateInitialViewController()!
+        let accountVC = vc as! AccountViewController
+        accountVC.mainVC = self
+        present(vc, animated: true) {
+            print("Segue to account completed.")
+        }
+        
+        /*
+        // accountViewController = AccountViewController()
+        let accountStoryboard = UIStoryboard.init(name: "Account", bundle: nil)
+        accountViewController = accountStoryboard.instantiateViewController(withIdentifier: "AccountViewController") as! AccountViewController
+        // accountViewController = accountStoryboard.instantiateInitialViewController()! as! AccountViewController
+        accountViewController.mainVC = self
+        present(accountViewController, animated: true) {
+            print("Segue to account completed.")
+        }*/
     }
     
     func setupView(){
@@ -189,51 +211,6 @@ class MainViewController: UIViewController{
         let beaconViewController = segue.destination as! BeaconViewController
         beaconViewController.mainVC = self
     }
-    @IBAction func unwindToMain(segue:UIStoryboardSegue) { print("Unwinding to main")} // Hook up to icon later
+    @IBAction func unwindToMain(segue:UIStoryboardSegue) {print("Unwinding to main")} // Hook up to icon later
     
 }
-
-    
-extension UIColor {
-        
-        convenience init(red: Int, green: Int, blue: Int) {
-            assert(red >= 0 && red <= 255, "Invalid red component")
-            assert(green >= 0 && green <= 255, "Invalid green component")
-            assert(blue >= 0 && blue <= 255, "Invalid blue component")
-            
-            self.init(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: 1.0)
-        }
-        
-        convenience init(rgb: Int) {
-            self.init(
-                red: (rgb >> 16) & 0xFF,
-                green: (rgb >> 8) & 0xFF,
-                blue: rgb & 0xFF
-            )
-        }
-    }
-extension UIViewController{
-    
-    public func delay(bySeconds seconds: Double, dispatchLevel: DispatchLevel = .main, closure: @escaping () -> Void) {
-        let dispatchTime = DispatchTime.now() + seconds
-        dispatchLevel.dispatchQueue.asyncAfter(deadline: dispatchTime, execute: closure)
-    }
-    
-    public enum DispatchLevel {
-        case main, userInteractive, userInitiated, utility, background
-        var dispatchQueue: DispatchQueue {
-            switch self {
-            case .main:                 return DispatchQueue.main
-            case .userInteractive:      return DispatchQueue.global(qos: .userInteractive)
-            case .userInitiated:        return DispatchQueue.global(qos: .userInitiated)
-            case .utility:              return DispatchQueue.global(qos: .utility)
-            case .background:           return DispatchQueue.global(qos: .background)
-            }
-        }
-    }
-}
-
-
-
-
-

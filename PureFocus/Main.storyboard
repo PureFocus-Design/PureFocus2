@@ -126,11 +126,14 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rc6-2a-Beo">
                                                 <rect key="frame" x="158" y="0.0" width="50" height="50"/>
-                                                <state key="normal" title="Allow"/>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G8K-Ix-kkb">
-                                                <rect key="frame" x="237" y="0.0" width="50" height="50"/>
                                                 <state key="normal" title="Log"/>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G8K-Ix-kkb" userLabel="AcctVC Button">
+                                                <rect key="frame" x="237" y="0.0" width="50" height="50"/>
+                                                <state key="normal" title="Acct"/>
+                                                <connections>
+                                                    <action selector="accountButtonHit:" destination="BYZ-38-t0r" eventType="touchUpInside" id="MTc-r5-fTD"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <constraints>

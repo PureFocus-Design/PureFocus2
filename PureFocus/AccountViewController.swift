@@ -1,8 +1,8 @@
 //
-//  BeaconViewController.swift
+//  AccountViewController.swift
 //  PureFocus
 //
-//  Created by Ryan Dines on 8/18/17.
+//  Created by Ryan Dines on 10/3/17.
 //  Copyright © 2017 Ryan Dines. All rights reserved.
 //
 
@@ -11,12 +11,7 @@ import UIKit
 import CoreLocation
 import CoreBluetooth
 
-/*
-protocol SendDataToMainVCProtocol{
-    func sendData(syncedDevices: [CBPeripheral], receivingVC: MainViewController)
-}*/
-
-class BeaconViewController: UIViewController{
+class AccountViewController: UIViewController{
     
     // MARK ADD CODE:  Consider adding a re-scan button, and calibrating power per device
     
@@ -29,10 +24,10 @@ class BeaconViewController: UIViewController{
     @IBOutlet weak var syncedDevicesTableView: UITableView!
     
     @IBOutlet weak var addDeviceButton: UIButton!
-
+    
     @IBAction func addDeviceButtonHit(_ sender: Any) {
         
-        // 
+        //
         
         let beacon = appDelegate.cbPeripherals[beaconList.selectedRow(inComponent: 0)]
         appDelegate.syncedDevices.append(beacon)
@@ -40,18 +35,18 @@ class BeaconViewController: UIViewController{
         print("Result of transfer from cbPeripherals to syncedDevices: ")
         print("cbPeripherals: \(appDelegate.cbPeripherals.map({$0.id}))")
         print("SyncedDevices: \(appDelegate.syncedDevices.map({$0.id}))")
-
+        
         self.syncedDevicesTableView.reloadData()
-
+        
         // MARK ADD CODE:  PREVENT USER FROM ADDING DUPLICATE DEVICE
         
     }
-
+    
     @IBAction func mainButtonHit(_ sender: Any) {
         print("mainHit")
         let segue = UIStoryboardSegue.init(identifier: "backToMain", source: self, destination: mainVC)
         self.unwind(for: segue, towardsViewController: mainVC)
-            
+        
     }
     
     func setupView(){
@@ -69,7 +64,7 @@ class BeaconViewController: UIViewController{
         syncedDevicesTableView.backgroundColor = UIColor.init(red: 255, green: 255, blue: 204)
         print("Synced devices: \(appDelegate.syncedDevices)")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -121,7 +116,7 @@ class BeaconViewController: UIViewController{
         }
     }
 }
-extension BeaconViewController: UITextFieldDelegate{
+extension AccountViewController: UITextFieldDelegate{
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool{
         return true
     }// return NO to disallow editing.
@@ -159,29 +154,29 @@ extension BeaconViewController: UITextFieldDelegate{
     }
 }
 
-extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
+extension AccountViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     
     
     
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat{
-
+        
         return CGFloat.init(250)
     }
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat{
-
+        
         return CGFloat.init(50)
     }
     // these methods return either a plain NSString, a NSAttributedString, or a view (e.g UILabel) to display the row for the component.
     // for the view versions, we cache any hidden and thus unused views and pass them back for reuse.
     // If you return back a different object, the old one will be released. the view will be centered in the row rect
     /*
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?{
-        print("titleForRow: \(row)")
-        
-        // Dynamically fill titles with array of possible beacons
-        return cbPeripherals[row].name
-    }*/
+     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?{
+     print("titleForRow: \(row)")
+     
+     // Dynamically fill titles with array of possible beacons
+     return cbPeripherals[row].name
+     }*/
     
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString?{
         let attributes = [ NSFontAttributeName: UIFont(name: "TimesNewRomanPSMT", size: 12.0)! ]
@@ -196,11 +191,11 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
         return fancyName
         
     }// attributed title is favored if both methods are implemented
- /*
-    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView{
-        
-    }
- */
+    /*
+     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView{
+     
+     }
+     */
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int){
         if appDelegate.cbPeripherals.count > 0{
             self.uuID.text = appDelegate.cbPeripherals[row].identifier.uuidString
@@ -220,7 +215,7 @@ extension BeaconViewController: UIPickerViewDelegate, UIPickerViewDataSource{
     }
 }
 
-extension BeaconViewController: UITableViewDelegate, UITableViewDataSource{
+extension AccountViewController: UITableViewDelegate, UITableViewDataSource{
     
     
     
@@ -256,29 +251,5 @@ extension BeaconViewController: UITableViewDelegate, UITableViewDataSource{
     
 }
 
-
-/*
-extension BeaconViewController: SendDataToMainVCProtocol{
-    
-    func sendData(syncedDevices: [CBPeripheral], receivingVC: MainViewController){
-        print("Sending data back to main vc: \(syncedDevices)")
-
-        receivingVC.syncedDevices = syncedDevices
-        receivingVC.inRangeTextField.font = UIFont(name: "TimesNewRomanPSMT", size: 12.0)
-        receivingVC.inRangeTextField.text = "Searching for \(syncedDevices.last?.name ?? "unknown")"
-        // receivingVC.initializeCoreBluetoothManager()
-        // receivingVC.deviceManager = cbCentralManager
-        // removed above line to implement appDelegate
-        print("syncedDevices \(syncedDevices)")
-        for device in syncedDevices{
-            receivingVC.deviceManager.connect(device, options: nil)
-            receivingVC.deviceManager.delegate = receivingVC
-            let connectedPeripherals = receivingVC.deviceManager.retrieveConnectedPeripherals(withServices: [CBUUID.init(nsuuid: device.identifier)])
-            print("connectedPeripherals: \(connectedPeripherals)")
-        }
-        receivingVC.reloadInputViews()
-    }
-}
-*/
 
 
